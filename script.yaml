@@ -1,0 +1,169 @@
+alias: Light / Hue Scene
+description: >-
+  This script tries to replicate the Hue scenes. Colors are distributed randomly
+  on participating lights. Each scene currently has five different colors
+  represented by XY values. The script is only applied to lights that support XY
+  color mode.
+fields:
+  target:
+    name: Target
+    required: true
+    description: Select one or more areas or light entities.
+    selector:
+      target:
+        entity:
+          domain: light
+  scene:
+    name: Scene
+    description: Which scene? Scenes are taken from the Hue app.
+    required: true
+    default: Savanna Sunset
+    selector:
+      select:
+        options:
+          - Savanna Sunset
+          - Golden Pond
+          - Horizon
+          - Frosty Dawn
+          - Crocus
+          - Tropical Twilight
+          - Ein bunter Garten
+          - Random
+  onlyonlights:
+    name: Only lights currently on?
+    description: If enabled, the scene is only applied to the lights currently on.
+    required: false
+    default: false
+    selector:
+      boolean: null
+  skipgroups:
+    name: Skip groups
+    description: If enabled, group light entities will be skipped.
+    required: false
+    default: true
+    selector:
+      boolean: null
+  hue_min:
+    name: Hue minimum value
+    selector:
+      number:
+        min: 0
+        max: 359
+    default: 0
+  hue_max:
+    name: Hue maximum value
+    selector:
+      number:
+        min: 1
+        max: 360
+    default: 360
+  sat_min:
+    name: Saturation minimum value
+    selector:
+      number:
+        min: 0
+        max: 100
+    default: 99
+  sat_max:
+    name: Saturation maximum value
+    selector:
+      number:
+        min: 1
+        max: 101
+    default: 101
+sequence:
+  - variables:
+      colors: |-
+        {% set scenes = {
+          "Savanna Sunset": {
+            "colors": [[0.644, 0.3348],[0.5246,
+              0.3864],[0.4801, 0.4309],[0.5862, 0.3575],[0.4162, 0.4341]]
+          },
+          "Golden Pond": {
+            "colors": [[0.5695, 0.3999],[0.482,
+              0.4489],[0.496, 0.4424],[0.5584, 0.4083],[0.5063, 0.4474]]
+          },
+          "Horizon": {
+            "colors": [[0.2779, 0.2188],[0.1811,
+              0.1979],[0.5247, 0.3877],[0.592, 0.385],[0.1731, 0.1978]]
+          },
+          "Frosty Dawn": {
+            "colors": [[0.4221, 0.386],[0.387,
+              0.4328],[0.4013, 0.4172],[0.439, 0.3782],[0.4675, 0.3769]]
+          },
+          "Crocus": {
+            "colors": [[0.2877, 0.2519],[0.2194, 0.1332],[0.4212, 0.38],[0.3818, 0.485],[0.4195, 0.4216]]
+          },
+          "Tropical Twilight": {
+            "colors": [[0.5813, 0.3636],[0.2412, 0.1171],[0.3044, 0.1803],[0.4731, 0.3723],[0.363, 0.2716]]
+          },
+          "Ein bunter Garten": {
+            "colors": [[0.137, 0.053],[0.689, 0.307],[0.325093, 0.130816],[0.397, 0.161]]
+          },
+          "Random": {
+            "colors": []
+          }
+        }%}
+        {{scenes[scene].colors}}
+      lights: |-
+        {% set l=[]%}
+        {% if target.area_id %}
+          {% if target.area_id is iterable and not target.area_id is string %}
+            {% for a in target.area_id %}
+              {% set l = l + area_entities(a)|select('match', 'light.')|list %}              
+            {% endfor %}
+          {% else %}
+            {% set l = l + area_entities(target.area_id)|select('match', 'light.')|list %}
+          {% endif %}
+        {% endif %}
+        {% if target.entity_id %}
+          {% if target.entity_id is iterable and not target.entity_id is string %}
+            {% set l = l + (target.entity_id|list) %}
+          {% else %}
+            {% set l = l + [target.entity_id] %}
+          {% endif %}
+        {% endif %}
+
+        {% if onlyonlights %}
+        {% set l = l| select('is_state', 'on')%}
+        {% endif %}
+
+        {% if skipgroups %}
+        {% set l|from_json %}
+        [{%- for ll in l -%}
+          {%- if not state_attr(ll, "entity_id")-%}
+          "{{ ll }}"
+          {%- if not loop.last-%},{%-endif-%}
+          {%-endif-%}
+        {%- endfor -%}]
+        {% endset %}
+        {% endif %}
+
+        [{%- for ll in l %}
+          {%- set colormodes = state_attr(ll, "supported_color_modes") -%}
+          {%- if "xy" in colormodes -%}
+          "{{ ll }}"
+          {%- if not loop.last-%},{%-endif-%}
+          {%- endif -%}
+        {%- endfor -%}]
+  - repeat:
+      for_each: "{{ lights }}"
+      sequence:
+        - if:
+            - condition: template
+              value_template: "{{ scene == \"Random\" }}"
+          then:
+            - service: light.turn_on
+              data:
+                hs_color:
+                  - "{{ range(hue_min,hue_max)|random }}"
+                  - "{{ range(sat_min,sat_max)|random }}"
+              target:
+                entity_id: "{{ repeat.item }}"
+          else:
+            - service: light.turn_on
+              data:
+                xy_color: "{{ colors|random}}"
+              target:
+                entity_id: "{{ repeat.item }}"
+mode: single

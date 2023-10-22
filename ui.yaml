@@ -1,0 +1,63 @@
+# lovelace_gen
+type: custom:paper-buttons-row
+base_config:
+  name: false
+  ripple: fill
+  styles:
+    button:
+      width: 20%
+      margin: 0
+      padding: 1px
+    icon:
+      border-radius: 5px
+      height: 60px;
+      width: 100%;
+      object-fit: cover;
+  tap_action:
+    action: call-service
+    service: script.light_hue_scene
+    service_data:
+      onlyonlights: true
+      skipgroups: true
+      target:
+        area_id: {{ area }}
+  double_tap_action:
+    action: call-service
+    service: script.light_hue_scene
+    service_data:
+      onlyonlights: false
+      skipgroups: true
+      target:
+        area_id: {{ area }}
+buttons:
+{% for s in scenes %}
+{% if s == "Random" %}
+  - entity: script.light_hue_scene
+    image: /local/hue/dice.jpg
+    tooltip: Random
+    tap_action:
+      service_data:
+        scene: Random
+        hue_min: 0
+        hue_max: 360
+        sat_min: 99
+        sat_max: 101
+    double_tap_action:
+      service_data:
+        scene: Random
+        hue_min: 0
+        hue_max: 360
+        sat_min: 99
+        sat_max: 101
+{% else %}
+  - entity: script.light_hue_scene
+    image: /local/hue/{{s}}.jpg
+    tooltip: {{ s }}
+    tap_action:
+      service_data:
+        scene: {{ s }}
+    double_tap_action:
+      service_data:
+        scene: {{ s }}
+{% endif %}
+{% endfor %}
