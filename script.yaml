@@ -157,7 +157,7 @@ sequence:
 
         [{%- for ll in l %}
           {%- set colormodes = state_attr(ll, "supported_color_modes") -%}
-          {%- if "xy" in colormodes -%}
+          {%- if "xy" in colormodes or "rgb" in colormodes -%}
           "{{ ll }}"
           {%- if not loop.last-%},{%-endif-%}
           {%- endif -%}
