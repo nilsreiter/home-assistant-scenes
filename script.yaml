@@ -32,45 +32,61 @@ fields:
   onlyonlights:
     name: Only lights currently on?
     description: If enabled, the scene is only applied to the lights currently on.
-    required: false
+    required: true
     default: false
     selector:
       boolean: null
   skipgroups:
     name: Skip groups
     description: If enabled, group light entities will be skipped.
-    required: false
+    required: true
     default: true
     selector:
       boolean: null
   hue_min:
     name: Hue minimum value
+    description: >-
+      Only relevant when scene is "Random". Specifies the minimum hue value to
+      draw from.
+    required: false
     selector:
       number:
         min: 0
         max: 359
-    default: 0
+    example: 0
   hue_max:
     name: Hue maximum value
+    description: >-
+      Only relevant when scene is "Random". Specifies the maximum hue value to
+      draw from.
+    required: false
     selector:
       number:
         min: 1
         max: 360
-    default: 360
+    example: 360
   sat_min:
     name: Saturation minimum value
+    description: >-
+      Only relevant when scene is "Random". Specifies the minimum saturation
+      value to draw from.
+    required: false
     selector:
       number:
         min: 0
         max: 100
-    default: 99
+    example: 99
   sat_max:
+    required: false
     name: Saturation maximum value
+    description: >-
+      Only relevant when scene is "Random". Specifies the maximum saturation
+      value to draw from.
     selector:
       number:
         min: 1
         max: 101
-    default: 101
+    example: 101
 sequence:
   - variables:
       colors: |-
@@ -156,8 +172,8 @@ sequence:
             - service: light.turn_on
               data:
                 hs_color:
-                  - "{{ range(hue_min,hue_max)|random }}"
-                  - "{{ range(sat_min,sat_max)|random }}"
+                  - "{{ range(hue_min|default(0),hue_max|default(360))|random }}"
+                  - "{{ range(sat_min|default(99),sat_max|default(101))|random }}"
               target:
                 entity_id: "{{ repeat.item }}"
           else:
