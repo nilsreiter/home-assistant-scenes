@@ -14,6 +14,21 @@ It basically supports the following things:
 
 It can be found in `script.yaml`.
 
+## Setting a scene
+Setting a scene with this script is done via a service call:
+
+```yaml
+service: script.light_hue_scene
+data:
+  scene: Savanna Sunset
+  onlyonlights: false
+  skipgroups: true
+  target:
+    area_id: wohnzimmer
+```
+
+The exact service name depends on how you name the script.
+
 # 2. The colors
 
 The next question: How to get the colors? The Hue app [shows them in small circles](gfx/circles.jpeg), but I thought there needs to be a better way to extract the colors. Since I still have the bridge running, I applied the scene to a number of lights, and extracted the color info via Home Asssistant with this template script:
