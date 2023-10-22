@@ -16,7 +16,7 @@ It can be found in `script.yaml`.
 
 # 2. The colors
 
-The next question: How to get the colors? The Hue app [shows them in small circles](circles.jpeg), but I thought there needs to be a better way to extract the colors. Since I still have the bridge running, I applied the scene to a number of lights, and extracted the color info via Home Asssistant with this template script:
+The next question: How to get the colors? The Hue app [shows them in small circles](gfx/circles.jpeg), but I thought there needs to be a better way to extract the colors. Since I still have the bridge running, I applied the scene to a number of lights, and extracted the color info via Home Asssistant with this template script:
 
 ```jinja2
 {%- set lightstates -%}
