@@ -32,14 +32,14 @@ fields:
   onlyonlights:
     name: Only lights currently on?
     description: If enabled, the scene is only applied to the lights currently on.
-    required: true
+    required: false
     default: false
     selector:
       boolean: null
   skipgroups:
     name: Skip groups
     description: If enabled, group light entities will be skipped.
-    required: true
+    required: false
     default: true
     selector:
       boolean: null
@@ -143,11 +143,11 @@ sequence:
           {% endif %}
         {% endif %}
 
-        {% if onlyonlights %}
+        {% if onlyonlights|default(true) %}
         {% set l = l| select('is_state', 'on')%}
         {% endif %}
 
-        {% if skipgroups %}
+        {% if skipgroups|default(true) %}
         {% set l|from_json %}
         [{%- for ll in l -%}
           {%- if not state_attr(ll, "entity_id")-%}
