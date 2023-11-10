@@ -87,6 +87,15 @@ fields:
         min: 1
         max: 101
     example: 101
+  brightness:
+    name: Brightness
+    description: If set, all lights will be specified to the given brightness percentage.
+    example: 50
+    selector:
+      number:
+        min: 1
+        max: 100
+        unit_of_measurement: "%"
 sequence:
   - variables:
       colors: |-
@@ -168,21 +177,23 @@ sequence:
   - repeat:
       for_each: "{{ lights }}"
       sequence:
-        - if:
-            - condition: template
-              value_template: "{{ scene == \"Random\" }}"
-          then:
-            - service: light.turn_on
-              data:
-                hs_color:
-                  - "{{ range(hue_min|default(0),hue_max|default(360))|random }}"
-                  - "{{ range(sat_min|default(99),sat_max|default(101))|random }}"
-              target:
-                entity_id: "{{ repeat.item }}"
-          else:
-            - service: light.turn_on
-              data:
-                xy_color: "{{ colors|random}}"
-              target:
-                entity_id: "{{ repeat.item }}"
+        - variables:
+            datadict: >-
+              {% if scene == "Random" %}
+                {% set dd = { "hs_color": [
+                  range(hue_min|default(0),hue_max|default(360))|random, 
+                  range(sat_min|default(99),sat_max|default(101))|random ] } %}
+              {% else %}
+                {% set xy = colors|random %}
+                {% set dd = {"xy_color": [xy|first, xy|last] } %}
+              {% endif %}
+              {% if brightness %}
+                {% set bd = {"brightness_pct": brightness } %}
+                {% set dd = dict(dd, **bd) %}
+              {% endif %}
+              {{ dd }}
+        - service: light.turn_on
+          data: "{{ datadict }}"
+          target:
+            entity_id: "{{ repeat.item }}"
 mode: single
