@@ -132,7 +132,18 @@ sequence:
             "colors": []
           }
         }%}
-        {{scenes[scene].colors}}
+
+
+        # shuffle color order
+        {% set ns = namespace(x = scenes[scene].colors) %}
+        {% for i in range(ns.x | length - 1, 0, -1) %}
+          {% set j = range(0, i + 1) | random %}
+          {% if j != i %}
+            {% set ns.x = ns.x[:j]+[ns.x[i]]+ns.x[j+1:i]+[ns.x[j]]+ns.x[i+1:] %}
+          {% endif %}
+        {% endfor %}
+
+        {{ ns.x }}
       lights: |-
         {% set l=[]%}
         {% if target.area_id %}
@@ -178,20 +189,18 @@ sequence:
       for_each: "{{ lights }}"
       sequence:
         - variables:
-            datadict: >-
+            datadict: |-
               {% if scene == "Random" %}
                 {% set dd = { "hs_color": [
                   range(hue_min|default(0),hue_max|default(360))|random, 
                   range(sat_min|default(99),sat_max|default(101))|random ] } %}
               {% else %}
-                {% set xy = colors|random %}
+                {% set xy = colors[repeat.index % colors|length] %}
                 {% set dd = {"xy_color": [xy|first, xy|last] } %}
-              {% endif %}
-              {% if brightness %}
+              {% endif %} {% if brightness %}
                 {% set bd = {"brightness_pct": brightness } %}
                 {% set dd = dict(dd, **bd) %}
-              {% endif %}
-              {{ dd }}
+              {% endif %} {{ dd }}
         - service: light.turn_on
           data: "{{ datadict }}"
           target:
