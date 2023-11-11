@@ -23,6 +23,7 @@ data:
   scene: Savanna Sunset
   onlyonlights: false
   skipgroups: true
+  brightness: 50
   target:
     area_id: wohnzimmer
 ```
