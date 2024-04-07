@@ -4,28 +4,21 @@ My solution relies on three parts, and is also described [here in the Home Assis
 
 # 1. The script
 
-It basically supports the following things:
+The classic script can still be found in `script.yaml`. The current version, however, is a script blueprint, residing in `blueprint.yaml`.
 
-- Select a room or a couple of lights
-- Select a scene by name
-- The scene is associated with a few color, that are distributed randomly to the participating lights
-- It's possible to only apply to lights that are already on
-- It's possible to skip light groups.
-
-It can be found in `script.yaml`.
+When importing the blueprint, one has to select the lights it applies to (or areas or labels), and a few other basic properties. Other features can (and need to) be selected when running the script.
 
 ## Setting a scene
 Setting a scene with this script is done via a service call:
 
 ```yaml
-service: script.light_hue_scene
+service: script.1712410790992
 data:
   scene: Savanna Sunset
+  repeat_delay: "00:00:00"
   onlyonlights: false
-  skipgroups: true
-  brightness: 50
-  target:
-    area_id: wohnzimmer
+  brightness: 100
+  transition: 5
 ```
 
 The exact service name depends on how you name the script.

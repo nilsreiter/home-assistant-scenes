@@ -1,0 +1,369 @@
+blueprint:
+  name: Hue-like Scenes
+  domain: script
+  description: >-
+    This script replicates Hue scenes. Each scene has five different 
+    colors
+    represented by XY values. These colors are distributed randomly
+    on the participating lights (must support XY or RGB color modes) -- each 
+    light gets a different color.
+
+    The script can run in two modes, selectable *at runtime*. In mode *once* 
+    the script sets the colors once and then stops. In mode *loop*, the script
+    repeats continuously, with a delay between iterations. If the script is run
+    in loop mode, it can either be terminated by called `script.turn_off` 
+    service or by turning off one of the participating lights. 
+
+    The script has various configuration options, described below. The intended 
+    setup is to instantiate the blueprint for each area in which it will be run.
+
+    ## Changelog 
+
+    ### 2.0
+
+    - Made into a blueprint. Intended use case: Instantiate blueprint for each area (then they can run independently in parallel).
+
+    - Supports loop mode, a.k.a. dynamic scenes
+
+    - Can exclude lights by manufacturer
+
+    - Select lights by labels
+
+    ## Scene images
+
+    The images used in the Hue app to represent a scene use creative commons 
+    licenses. The following is a list of (some) scenes and image sources:
+
+    - Savanna Sunset: https://www.flickr.com/photos/ladydragonflyherworld/6293722846
+
+    - Majestic Morning: https://unsplash.com/photos/aerial-photo-of-foggy-trees-and-mountains-dbu1zrkZZuo
+
+    - Horizon: https://www.pexels.com/photo/rocks-on-water-2261500/
+
+    - Tropical Twilight: https://www.flickr.com/photos/130079987@N02/16342014082
+
+    - Crocus: https://unsplash.com/photos/close-up-photo-of-purple-petaled-flower-hB_xgEXucQs
+  author: Nils Reiter
+  homeassistant:
+    min_version: "2024.04.00"
+  input:
+    target:
+      name: Target
+      description: >-
+        Select one or more areas, labels or light entities. The 
+        script picks compatible lights on its own.
+      selector:
+        target:
+          entity:
+            domain: light
+    skipgroups:
+      name: Skip groups
+      description: >-
+        If enabled, group light entities will be skipped. Note that 
+        this only applies to the groups defined in Home Assistant. Groups of 
+        Zigbee lights defined in the settings of the Zigbee device are not 
+        recognized as group. See option `filter_manufacturer"` below.
+      default: true
+      selector:
+        boolean: null
+    hue_min:
+      name: Hue minimum value
+      description: >-
+        Only relevant when scene is "Random". Specifies the minimum hue value to
+        draw from.
+      selector:
+        number:
+          min: 0
+          max: 359
+      default: 0
+    hue_max:
+      name: Hue maximum value
+      description: >-
+        Only relevant when scene is "Random". Specifies the maximum hue value to
+        draw from.
+      selector:
+        number:
+          min: 1
+          max: 360
+      default: 360
+    sat_min:
+      name: Saturation minimum value
+      description: >-
+        Only relevant when scene is "Random". Specifies the minimum saturation
+        value to draw from.
+      selector:
+        number:
+          min: 0
+          max: 100
+      default: 99
+    sat_max:
+      name: Saturation maximum value
+      description: >-
+        Only relevant when scene is "Random". Specifies the maximum saturation
+        value to draw from.
+      selector:
+        number:
+          min: 1
+          max: 101
+      default: 101
+    filter_manufacturer:
+      name: Filter lighty by manufacturer
+      description: >-
+        If set, lights by that manufacturer will be skipped. This can be used to
+        skip groups defined in the Zigbee controller. E.g., if set to "Silicon 
+        Labs" groups created on SkyConnect will be removed.
+      selector:
+        text:
+      default: ""
+    inner_delay:
+      name: Inner delay
+      description: >-
+        Adds a very short delay between sending commands to lights 
+        to prevent flooding the network.
+      selector:
+        number:
+          min: 0
+          max: 2
+          step: 0.1
+          unit_of_measurement: "s"
+      default: 0.5
+mode: restart
+fields:
+  scene:
+    name: Scene
+    description: The scene to apply.
+    required: true
+    default: Savanna Sunset
+    selector:
+      select:
+        options:
+          - Savanna Sunset
+          - Golden Pond
+          - Horizon
+          - Frosty Dawn
+          - Crocus
+          - Tropical Twilight
+          - Majestic Morning
+          - Random
+  repeat_delay:
+    selector:
+      duration: {}
+    name: Repeat delay
+    default: "00:00:00"
+    description: >-
+      If set to a time > 0, the script runs in loop mode. 
+      After the delay, the script repeats and assigns the
+      colors anew. Please note that the script stops when one of the lights
+      is turned off or it is termined with a service call.
+    required: true
+  onlyonlights:
+    name: Only lights currently on?
+    description: >-
+      If enabled, the scene is only applied to the lights currently on. This is
+      useful if you want to have on-the-fly control over the participating 
+      lights.
+    required: true
+    default: false
+    selector:
+      boolean: null
+  brightness:
+    name: Brightness
+    description: >-
+      If set, all lights will be set to the given brightness percentage. In
+      loop mode, brightness is only applied on the first iteration, allowing
+      brightness changes afterwards.
+    example: 50
+    required: false
+    default: 100
+    selector:
+      number:
+        min: 1
+        max: 100
+        unit_of_measurement: "%"
+  transition:
+    name: Transition time
+    description: How long to move from one color to the next
+    required: false
+    example: 2
+    default: 5
+    selector:
+      number:
+        min: 0
+        max: 30
+        unit_of_measurement: s
+variables:
+  target: !input target
+  sat_min: !input sat_min
+  sat_max: !input sat_max
+  hue_min: !input hue_min
+  hue_max: !input hue_max
+  filter_manufacturer: !input filter_manufacturer
+  skipgroups: !input skipgroups
+  scenes: |-
+    {% set scenes = {
+      "Savanna Sunset": {
+        "colors": [[0.644, 0.3348],[0.5246,
+          0.3864],[0.4801, 0.4309],[0.5862, 0.3575],[0.4162, 0.4341]]
+      },
+      "Golden Pond": {
+        "colors": [[0.5695, 0.3999],[0.482,
+          0.4489],[0.496, 0.4424],[0.5584, 0.4083],[0.5063, 0.4474]]
+      },
+      "Horizon": {
+        "colors": [[0.2779, 0.2188],[0.1811,
+          0.1979],[0.5247, 0.3877],[0.592, 0.385],[0.1731, 0.1978]]
+      },
+      "Frosty Dawn": {
+        "colors": [[0.4221, 0.386],[0.387,
+          0.4328],[0.4013, 0.4172],[0.439, 0.3782],[0.4675, 0.3769]]
+      },
+      "Crocus": {
+        "colors": [[0.2877, 0.2519],[0.2194, 0.1332],[0.4212, 0.38],[0.3818, 0.485],[0.4195, 0.4216]]
+      },
+      "Tropical Twilight": {
+        "colors": [[0.5813, 0.3636],[0.2412, 0.1171],[0.3044, 0.1803],[0.4731, 0.3723],[0.363, 0.2716]]
+      },
+      "Color Palette Nr. 4557": {
+        "colors": [[0.0264,0.0368],[0.1369,0.2082],[0.6616,0.8396],[0.4481,0.2822],[0.1447,0.0799]]
+      },
+      "Majestic Morning": {
+        "colors": [[0.3979, 0.413],[0.4741, 0.43],[0.4659, 0.3561],[0.1879, 0.0644],[0.5471, 0.3588]]
+      },
+      "Random": {
+        "colors": []
+      }
+    }
+    %}
+    {{ scenes }}
+  lights: |-
+    {% set ns = namespace(areas=[], l=[]) %}
+
+    ## collect areas
+    {% if target.area_id is defined %}
+      {% if target.area_id is iterable and not target.area_id is string %}
+        {% set ns.areas = ns.areas + target.area_id %}
+      {% else %}
+        {% set ns.areas = ns.areas + [target.area_id] %}
+      {% endif %}
+    {% endif %}
+
+    {% if target.floor_id is defined %}
+      {% if target.floor_id is iterable and not target.floor_id is string %}
+        {% for f in target.floor_id %}
+          {% set ns.areas = ns.areas + floor_areas(f) %}
+        {% endfor %}        
+      {% else %}
+        {% set ns.areas = ns.areas + floor_areas(target.floor_id) %}
+      {% endif %}
+    {% endif %}
+
+    ## process areas
+    {% for a in ns.areas %}
+      {% set ns.l = ns.l + area_entities(a)|select('match', 'light.')|list %}
+    {% endfor %}
+
+    {% if target.entity_id is defined %}
+      {% if target.entity_id is iterable and not target.entity_id is string %}
+        {% set ns.l = ns.l + (target.entity_id|list) %}
+      {% else %}
+        {% set ns.l = ns.l + [target.entity_id] %}
+      {% endif %}
+    {% endif %}
+
+    ## process labels
+    {% if target.label_id is defined %}
+      {% if target.label_id is iterable and not target.label_id is string %}
+        {% for a in target.label_id %}
+          {% set ns.l = ns.l + label_entities(a)|select('match', 'light.')|list %}              
+        {% endfor %}
+      {% else %}
+        {% set ns.l = ns.l + label_entities(target.label_id)|select('match', 'light.')|list %}
+      {% endif %}
+    {% endif %}
+
+    {% if onlyonlights|default(true) %}
+    {% set ns.l = ns.l| select('is_state', 'on')%}
+    {% endif %}
+
+    {% if skipgroups|default(true) %}
+    {% set ns.l|from_json %}
+    [{%- for ll in ns.l -%}
+      {%- if not state_attr(ll, "entity_id")-%}
+          "{{ ll }}"
+          {%- if not loop.last-%},{%-endif-%}
+      {%-endif-%}
+    {%- endfor -%}]
+    {% endset %}
+    {% endif %}
+
+    {% if filter_manufacturer is defined %}
+    {% set ns.l|from_json %}
+    [{%- for ll in ns.l -%}
+        {%- if device_attr(device_id(ll), "manufacturer") != filter_manufacturer -%}
+          "{{ ll }}"
+          {%- if not loop.last-%},{%-endif-%}
+        {% endif %}
+    {%- endfor -%}]
+    {% endset %}
+    {% endif %}
+
+    [{%- for ll in ns.l %}
+      {%- set colormodes = state_attr(ll, "supported_color_modes") -%}
+      {%- if "xy" in colormodes or "rgb" in colormodes -%}
+      "{{ ll }}"
+      {%- if not loop.last-%},{%-endif-%}
+      {%- endif -%}
+    {%- endfor -%}]
+sequence:
+  - repeat:
+      while:
+        - condition: template
+          value_template: >-
+            {{ repeat.index == 1 or (
+              (repeat_delay.hours > 0 or repeat_delay.minutes > 0 or repeat_delay.seconds > 0) and 
+              (( lights | list | count ) == (lights | select('is_state', 'on') | list | count))
+            ) }}
+      sequence:
+        - variables:
+            colors: |-
+              # shuffle color order
+              {% set ns = namespace(x = scenes[scene].colors) %}
+              {% for i in range(ns.x | length - 1, 0, -1) %}
+                {% set j = range(0, i + 1) | random %}
+                {% if j != i %}
+                  {% set ns.x = ns.x[:j]+[ns.x[i]]+ns.x[j+1:i]+[ns.x[j]]+ns.x[i+1:] %}
+                {% endif %}
+              {% endfor %}
+              {{ ns.x }}
+            first: "{{ repeat.index == 1}}"
+        - repeat:
+            for_each: "{{ lights }}"
+            sequence:
+              - variables:
+                  datadict: |-
+                    {% if scene == "Random" %}
+                      {% set dd = { "hs_color": [
+                        range(hue_min|default(0),hue_max|default(360))|random, 
+                        range(sat_min|default(99),sat_max|default(101))|random ] } %}
+                    {% else %}
+                      {% set xy = colors[repeat.index % colors|length] %}
+                      {% set dd = {"xy_color": [xy|first, xy|last] } %}
+                    {% endif %}
+                    {% if brightness is defined and first %}
+                      {% set bd = {"brightness_pct": brightness } %}
+                      {% set dd = dict(dd, **bd) %}
+                    {% endif %}
+                    {% if transition %}
+                      {% set bd = {"transition": transition } %}
+                      {% set dd = dict(dd, **bd) %}
+                    {% endif %}
+                    {{ dd }}
+              - service: light.turn_on
+                data: "{{ datadict }}"
+                target:
+                  entity_id: "{{ repeat.item }}"
+              - delay: !input inner_delay
+        - wait_for_trigger:
+            - platform: template
+              value_template: "{{ (( lights | list | count ) != (lights | select('is_state', 'on') | list | count)) }}"
+          timeout: "{{ repeat_delay }}"
