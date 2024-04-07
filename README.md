@@ -111,3 +111,35 @@ My dashboards are heavily based on the entities and auto-entities cards, so I wa
 Alternatively, if you're using [`lovelace_gen`](https://github.com/thomasloven/hass-lovelace_gen), the row definition in `ui.yaml` might be helpful.
 
 ![](gfx/v2.png)
+
+## Version 3
+
+After playing around with the new sections dashboard, I changed the UI to a grid with picture cards:
+
+![](gfx/v3.png)
+
+```yaml
+type: grid
+square: false
+cards:
+  - type: picture
+    image_entity: image.savanna_sunset
+    double_tap_action:
+      action: call-service
+      service: script.light_hue_scene
+      target: {}
+      data:
+        scene: Savanna Sunset
+        onlyonlights: true
+        skipgroups: true
+        target:
+          area_id: wohnzimmer
+    tap_action:
+      action: call-service
+      service: input_select.select_option
+      target:
+        entity_id: input_select.wohnzimmer_lichtszenen
+      data:
+        option: Savanna Sunset
+
+````
