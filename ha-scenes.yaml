@@ -19,6 +19,11 @@ blueprint:
 
     ## Changelog 
     
+    ### 2.4
+    
+    - It is now possible to also specify devices. If a device has multiple entities from the
+      light domain, all will be added individually.
+    
     ### 2.3
     
     - Selecting the lights is now done via proper lists, and no longer relies on parsing json
@@ -408,7 +413,7 @@ variables:
     {% for a in ns.areas %}
       {% set ns.l = ns.l + area_entities(a)|select('match', 'light.')|list %}
     {% endfor %}
-
+    
     {% if target.entity_id is defined %}
       {% if target.entity_id is iterable and not target.entity_id is string %}
         {% set ns.l = ns.l + (target.entity_id|list) %}
@@ -416,7 +421,19 @@ variables:
         {% set ns.l = ns.l + [target.entity_id] %}
       {% endif %}
     {% endif %}
-
+    
+     ## process devices
+    {% if target.device_id is defined %}
+      {% if target.device_id is iterable and not target.device_id is string %}
+        {% for f in target.device_id %}
+          {% set ns.l = ns.l + device_entities(f)|select('match', 'light.')|list %}
+        {% endfor %}
+      {% else %}
+        {% set ns.l = ns.l + device_entities(target.device_id)|select('match', 'light.')|list %}
+      {% endif %}
+    {% endif %}
+    
+    
     ## process labels
     {% if target.label_id is defined %}
       {% if target.label_id is iterable and not target.label_id is string %}
@@ -427,11 +444,11 @@ variables:
         {% set ns.l = ns.l + label_entities(target.label_id)|select('match', 'light.')|list %}
       {% endif %}
     {% endif %}
-
+    
     {% if skipgroups|default(true) %}
     {% set ns.l = expand(ns.l) | rejectattr('attributes.entity_id', 'defined') | map(attribute = "entity_id") | list %}
     {% endif %}
-
+    
     {% if onlyonlights|default(false) %}
     {% set ns.l = ns.l | select('is_state', 'on') %}
     {% endif %}
