@@ -19,6 +19,16 @@ blueprint:
 
     ## Changelog 
     
+    ### 2.2
+    
+    - Transition time is now a blueprint field.
+    
+    - Repeat delay now has a default value of two minutes.
+    
+    - Fixed bug in duration format.
+    
+    
+    
     ### 2.1
     
     - The blueprint now contains all the Hue color scenes that are listed [here](https://gist.github.com/Hypfer/a0a8b5b9429831a7306ec4300077eaaa).
@@ -131,6 +141,15 @@ blueprint:
           step: 0.1
           unit_of_measurement: "s"
       default: 0.5
+    transition:
+      name: Transition time
+      description: How long to move from one color to the next
+      default: 5
+      selector:
+        number:
+          min: 0
+          max: 30
+          unit_of_measurement: s
 mode: restart
 fields:
   scene:
@@ -218,9 +237,12 @@ fields:
           - Winter mountain
   repeat_delay:
     selector:
-      duration: {}
+      duration:
     name: Repeat delay
-    default: "00:00:00"
+    default:
+      hours: 0
+      minutes: 2
+      seconds: 0
     description: >-
       If set to a time > 0, the script runs in loop mode. 
       After the delay, the script repeats and assigns the
@@ -233,7 +255,7 @@ fields:
       If enabled, the scene is only applied to the lights currently on. This is
       useful if you want to have on-the-fly control over the participating 
       lights.
-    required: false
+    required: true
     default: false
     selector:
       boolean: null
@@ -251,17 +273,7 @@ fields:
         min: 1
         max: 100
         unit_of_measurement: "%"
-  transition:
-    name: Transition time
-    description: How long to move from one color to the next
-    required: false
-    example: 2
-    default: 5
-    selector:
-      number:
-        min: 0
-        max: 30
-        unit_of_measurement: s
+
 variables:
   target: !input target
   sat_min: !input sat_min
@@ -270,6 +282,7 @@ variables:
   hue_max: !input hue_max
   filter_manufacturer: !input filter_manufacturer
   skipgroups: !input skipgroups
+  transition: !input transition
   scenes: |-
     {% set scenes = {
       "Blossom":{"colors":[[0.5119,0.4249],[0.3972,0.4025],[0.4419,0.4164],[0.2674,0.3018],[0.24,0.2761]]},
