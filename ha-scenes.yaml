@@ -141,6 +141,16 @@ blueprint:
           step: 0.1
           unit_of_measurement: "s"
       default: 0.5
+    report_entity:
+      default:
+      name: Reporter entity
+      description: >-
+        For proper visualisation, it might be good to know which scene was last 
+        activated. If this entity is set, it will always be updated when the 
+        script is called.
+      selector:
+        entity:
+          domain: input_text
     transition:
       name: Transition time
       description: How long to move from one color to the next
@@ -275,6 +285,7 @@ fields:
         unit_of_measurement: "%"
 
 variables:
+  report_entity: !input report_entity
   target: !input target
   sat_min: !input sat_min
   sat_max: !input sat_max
@@ -442,6 +453,14 @@ sequence:
       - conditions: "{{ lights | count == 0 }}"
         sequence:
           - stop: "No lights available"
+  - choose:
+      - conditions: "{{ report_entity is defined }}"
+        sequence:
+          - service: input_text.set_value
+            data:
+              value: "{{ scene }}"
+            target:
+              entity_id: !input report_entity
   - repeat:
       while: >-
         {{ repeat.index == 1 or (
