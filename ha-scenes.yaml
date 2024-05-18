@@ -19,6 +19,16 @@ blueprint:
 
     ## Changelog 
     
+    ### 2.3
+    
+    - Selecting the lights is now done via proper lists, and no longer relies on parsing json
+    
+    - New scene: Malibu pink
+    
+    - Description of the scene field is shorter
+    
+    - Added a report entity field. This can be a `input_text` entity and whenever a scene is set, the scene name is written into the entity.
+    
     ### 2.2
     
     - Transition time is now a blueprint field.
