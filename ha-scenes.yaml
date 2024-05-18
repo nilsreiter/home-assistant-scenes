@@ -362,7 +362,7 @@ variables:
     %}
     {{ scenes }}
   lights: |-
-    {% set ns = namespace(areas=[], l=[]) %}
+    {% set ns = namespace(areas=[], l=[], lights_temporary=[]) %}
 
     ## collect areas
     {% if target.area_id is defined %}
@@ -407,48 +407,47 @@ variables:
       {% endif %}
     {% endif %}
 
-    {% if onlyonlights|default(true) %}
-    {% set ns.l = ns.l| select('is_state', 'on')%}
+    {% if skipgroups|default(true) %}
+    {% set ns.l = expand(ns.l) | rejectattr('attributes.entity_id', 'defined') | map(attribute = "entity_id") | list %}
     {% endif %}
 
-    {% if skipgroups|default(true) %}
-    {% set ns.l|from_json %}
-    [{%- for ll in ns.l -%}
-      {%- if not state_attr(ll, "entity_id")-%}
-          "{{ ll }}"
-          {%- if not loop.last-%},{%-endif-%}
-      {%-endif-%}
-    {%- endfor -%}]
-    {% endset %}
+    {% if onlyonlights|default(false) %}
+    {% set ns.l = ns.l | select('is_state', 'on') %}
     {% endif %}
+
 
     {% if filter_manufacturer is defined %}
-    {% set ns.l|from_json %}
-    [{%- for ll in ns.l -%}
+    {% set ns.lights_temporary = [] %}
+    {%- for ll in ns.l -%}
         {%- if device_attr(device_id(ll), "manufacturer") != filter_manufacturer -%}
-          "{{ ll }}"
-          {%- if not loop.last-%},{%-endif-%}
+          {% set ns.lights_temporary = ns.lights_temporary + [ll] %}
         {% endif %}
-    {%- endfor -%}]
-    {% endset %}
+    {%- endfor -%}
+    {% set ns.l = ns.lights_temporary|list %}
     {% endif %}
 
-    [{%- for ll in ns.l %}
+
+    {% set ns.lights_temporary = [] %}
+    {%- for ll in ns.l %}
       {%- set colormodes = state_attr(ll, "supported_color_modes") -%}
       {%- if "xy" in colormodes or "rgb" in colormodes -%}
-      "{{ ll }}"
-      {%- if not loop.last-%},{%-endif-%}
+        {% set ns.lights_temporary = ns.lights_temporary + [ll] %}
       {%- endif -%}
-    {%- endfor -%}]
+    {%- endfor -%}
+    {% set ns.l = ns.lights_temporary|list %}
+
+    {{ ns.l }}
 sequence:
+  - choose:
+      - conditions: "{{ lights | count == 0 }}"
+        sequence:
+          - stop: "No lights available"
   - repeat:
-      while:
-        - condition: template
-          value_template: >-
-            {{ repeat.index == 1 or (
-              (repeat_delay.hours > 0 or repeat_delay.minutes > 0 or repeat_delay.seconds > 0) and 
-              (( lights | list | count ) == (lights | select('is_state', 'on') | list | count))
-            ) }}
+      while: >-
+        {{ repeat.index == 1 or (
+          (repeat_delay.hours > 0 or repeat_delay.minutes > 0 or repeat_delay.seconds > 0) and 
+          (( lights | list | count ) == (lights | select('is_state', 'on') | list | count))
+        ) }}
       sequence:
         - variables:
             colors: |-
