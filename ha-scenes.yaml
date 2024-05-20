@@ -19,6 +19,9 @@ blueprint:
 
     ## Changelog 
     
+    ### 2.5
+    
+    - Added input `stop_when_lights_turn_off` to allow running the script continuously.
     ### 2.4
     
     - It is now possible to also specify devices. If a device has multiple entities from the
@@ -175,6 +178,17 @@ blueprint:
           min: 0
           max: 30
           unit_of_measurement: s
+    stop_when_lights_turn_off:
+      name: Stop the scene when the number of participating lights changes?
+      description: >-
+        When does the script stop? If set to true (the default), the script
+        stops whenever one of the participating lights is turned off. If
+        set to false, the script runs until it is stopped. This also means that
+        when one of the participating lights is turned off, it will be turned on 
+        again. The script needs to be turned off first, then the light.
+      default: true
+      selector:
+        boolean: null
 mode: restart
 fields:
   scene:
@@ -309,6 +323,7 @@ variables:
   filter_manufacturer: !input filter_manufacturer
   skipgroups: !input skipgroups
   transition: !input transition
+  stop_when_lights_turn_off: !input stop_when_lights_turn_off
   scenes: |-
     {% set scenes = {
       "Blossom":{"colors":[[0.5119,0.4249],[0.3972,0.4025],[0.4419,0.4164],[0.2674,0.3018],[0.24,0.2761]]},
@@ -534,7 +549,13 @@ sequence:
                 target:
                   entity_id: "{{ repeat.item }}"
               - delay: !input inner_delay
-        - wait_for_trigger:
-            - platform: template
-              value_template: "{{ (( lights | list | count ) != (lights | select('is_state', 'on') | list | count)) }}"
-          timeout: "{{ repeat_delay }}"
+        - if: "{{ stop_when_lights_turn_off }}"
+          then:
+            - wait_for_trigger:
+                - platform: template
+                  value_template: "{{ (( lights | list | count ) != (lights | select('is_state', 'on') | list | count)) }}"
+              timeout: "{{ repeat_delay }}"
+          else:
+            - if: "{{ repeat_delay != None }}"
+              then:
+                - delay: "{{ repeat_delay }}"
