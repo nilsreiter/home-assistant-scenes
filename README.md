@@ -4,9 +4,9 @@ My solution relies on three parts, and is also described [here in the Home Assis
 
 # 1. The script
 
-The classic script can still be found in `script.yaml`. The current version, however, is a script blueprint, residing in `blueprint.yaml`.
+The classic script can still be found in `script.yaml`. The current version, however, is a script blueprint, residing in `ha-scenes.yaml`.
 
-When importing the blueprint, one has to select the lights it applies to (or areas or labels), and a few other basic properties. Other features can (and need to) be selected when running the script.
+When importing the blueprint, one has to select the lights it applies to (or areas or devices or labels), and a few other basic properties. Other features can (and need to) be selected when starting the script.
 
 ## Setting a scene
 Setting a scene with this script is done via a service call:
@@ -14,18 +14,22 @@ Setting a scene with this script is done via a service call:
 ```yaml
 service: script.1712410790992
 data:
-  scene: Savanna Sunset
-  repeat_delay: "00:00:00"
+  scene: Savanna sunset
+  repeat_delay:
+    hours: 0
+    minutes: 2
+    seconds: 30
   onlyonlights: false
   brightness: 100
   transition: 5
 ```
 
-The exact service name depends on how you name the script.
+The exact service name depends on how you name the script. If `repeat_delay` is not specified, lights are assigned once.
 
 # 2. The colors
 
-The next question: How to get the colors? The Hue app [shows them in small circles](gfx/circles.jpeg), but I thought there needs to be a better way to extract the colors. Since I still have the bridge running, I applied the scene to a number of lights, and extracted the color info via Home Asssistant with this template script:
+I took the color definitions from [here](https://gist.github.com/Hypfer/a0a8b5b9429831a7306ec4300077eaaa). Several scenes seemed to be missing, so I added them with this snippet in the developer tools, after applying the official scene on a set of lights:
+
 
 ```jinja2
 {%- set lightstates -%}
@@ -40,9 +44,6 @@ The next question: How to get the colors? The Hue app [shows them in small circl
 {% if not loop.last %},{%endif%}
 {%- endfor -%}
 ```
-
-I used the template tool in the developer section of HA to run this, and then copied the colors into the script.
-
 ## More Colors
 
 The above snippet can be used to extract colors from existing Hue scenes. Another source for color palettes is [this page](https://colorpalettes.net).
