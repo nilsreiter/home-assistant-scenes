@@ -8,11 +8,14 @@ blueprint:
     on the participating lights (must support XY or RGB color modes) -- each 
     light gets a different color.
 
-    The script can run in two modes, selectable *at runtime*. In mode *once* 
-    the script sets the colors once and then stops. In mode *loop*, the script
-    repeats continuously, with a delay between iterations. If the script is run
-    in loop mode, it can either be terminated by called `script.turn_off` 
-    service or by turning off one of the participating lights. 
+    The script can run in two modes, selectable *at runtime*, corresponding to 
+    setting lights once or repeatedly. If `repeat_delay` is specified at the start
+    of the script, it runs continuously, with the specified delay in between rounds. 
+    In this case, the end of the script is determined by the `stop_when_lights_turn_off`
+    parameter: If set to true, the script turns off when one of the participating lights 
+    is turned off. If set to false, the script runs until it is turned off.
+    
+    If `repeat_delay` is left empty, lights are set once and the script ends.
 
     The script has various configuration options, described below. The intended 
     setup is to instantiate the blueprint for each area in which it will be run.
@@ -87,7 +90,7 @@ blueprint:
     target:
       name: Target
       description: >-
-        Select one or more areas, labels or light entities. The 
+        Select one or more areas, devices, labels or light entities. The 
         script picks compatible lights on its own.
       selector:
         target:
@@ -176,7 +179,7 @@ blueprint:
           domain: input_text
     transition:
       name: Transition time
-      description: How long to move from one color to the next
+      description: How long to move from one color to the next. Not used for color loop.
       default: 5
       selector:
         number:
