@@ -22,11 +22,15 @@ blueprint:
     ### 2.5
     
     - Added input `stop_when_lights_turn_off` to allow running the script continuously.
+    - Added scene "Colorloop", which iterates over the entire color wheel. Colorloop uses
+      hs color scheme, and only changes the hue value without touch the saturation.
+    - Re-added a scene consisting of random colors. Note that random colors are selected once 
+      when the script starts and then distributed over the lights.
     - Added input `debug` to generate debug messages in the log.
+    
     ### 2.4
     
-    - It is now possible to also specify devices. If a device has multiple entities from the
-      light domain, all will be added individually.
+    - It is now possible to also specify devices. If a device has multiple entities from the light domain, all will be added individually.
     
     ### 2.3
     
@@ -220,6 +224,7 @@ fields:
           - Blue lagoon
           - Cancun
           - Chinatown
+          - Colorloop
           - Crocus
           - Disturbia
           - Dreamy dusk
@@ -260,6 +265,7 @@ fields:
           - Palm Beach
           - Pensive
           - Precious
+          - Random
           - Resplendent
           - Rio
           - Rolling hills
@@ -408,7 +414,15 @@ variables:
       "Malibu pink":{"colors": [[0.5573, 0.3226],[0.3678, 0.1839],[0.1561, 0.1606],[0.4548, 0.2433],[0.154, 0.0799]]},
       "Tyrell":{"colors":[[0.2267,0.0832],[0.37,0.2328],[0.3977,0.1832],[0.1586,0.2579],[0.257,0.1754]]},
       "Disturbia":{"colors":[[0.3864,0.1864],[0.5305,0.261],[0.6587,0.2924],[0.2132,0.3113],[0.1616,0.3754]]},
-      "Hal":{"colors":[[0.5953,0.3092],[0.1589,0.2701],[0.2135,0.2508],[0.4846,0.4442],[0.5641,0.3328]]}}
+      "Hal":{"colors":[[0.5953,0.3092],[0.1589,0.2701],[0.2135,0.2508],[0.4846,0.4442],[0.5641,0.3328]]},
+      "Random":{"colors":[
+        [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
+        [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
+        [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
+        [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
+        [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
+      ]},
+      "Colorloop":{"colors":[]}}
     %}
     {{ scenes }}
   lights: |-
@@ -522,10 +536,17 @@ sequence:
           entity_id: "{{ this.entity_id }}"
   - repeat:
       while: >-
-        {{ repeat.index == 1 or (
-          (repeat_delay.hours > 0 or repeat_delay.minutes > 0 or repeat_delay.seconds > 0) and 
-          (( lights | list | count ) == (lights | select('is_state', 'on') | list | count))
-        ) }}
+        {{ 
+            (repeat.index == 1) or 
+            (
+              (repeat_delay.hours > 0 or repeat_delay.minutes > 0 or repeat_delay.seconds > 0) and
+              (stop_when_lights_turn_off == False)
+            ) or
+            (
+              (repeat_delay.hours > 0 or repeat_delay.minutes > 0 or repeat_delay.seconds > 0) and 
+              (( lights | list | count ) == (lights | select('is_state', 'on') | list | count))
+            ) 
+        }}
       sequence:
         - if: "{{ debug }}"
           then:
@@ -552,19 +573,30 @@ sequence:
             sequence:
               - variables:
                   datadict: |-
-                    {% if scene == "Random" %}
-                      {% set dd = { "hs_color": [
-                        range(hue_min|default(0),hue_max|default(360))|random, 
-                        range(sat_min|default(99),sat_max|default(101))|random ] } %}
+                    {% if scene == "Colorloop" %}
+                      {% set oldcol = state_attr(repeat.item, "hs_color") %}
+                      {% if first or (oldcol == None) %}
+                        {% set xy = scenes["Random"].colors[repeat.index % lights|length] %}
+                        {% set dd = {"hs_color": [xy|first, xy|last] } %}
+                      {% else %}
+                        {% set dd = { 
+                          "hs_color": [(oldcol[0]+10)%360,oldcol[1]],
+                          "transition": ( repeat_delay.hours*60*60 + repeat_delay.minutes*60 + repeat_delay.seconds )
+                        } %}
+                      {% endif %}
+                    {% elif scene == "Random" %}
+                      {% set xy = colors[repeat.index % colors|length] %}
+                      {% set dd = {"hs_color": [xy|first, xy|last] } %}
                     {% else %}
                       {% set xy = colors[repeat.index % colors|length] %}
                       {% set dd = {"xy_color": [xy|first, xy|last] } %}
                     {% endif %}
+                    
                     {% if brightness is defined and first %}
                       {% set bd = {"brightness_pct": brightness } %}
                       {% set dd = dict(dd, **bd) %}
                     {% endif %}
-                    {% if transition %}
+                    {% if transition and scene != "Colorloop" %}
                       {% set bd = {"transition": transition } %}
                       {% set dd = dict(dd, **bd) %}
                     {% endif %}
