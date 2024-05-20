@@ -22,6 +22,10 @@ blueprint:
 
     ## Changelog 
     
+    ### 2.5.1
+    
+    - Fixed a bug in assigning first colors for colorloop.
+    
     ### 2.5
     
     - Added input `stop_when_lights_turn_off` to allow running the script continuously.
@@ -579,8 +583,7 @@ sequence:
                     {% if scene == "Colorloop" %}
                       {% set oldcol = state_attr(repeat.item, "hs_color") %}
                       {% if first or (oldcol == None) %}
-                        {% set xy = scenes["Random"].colors[repeat.index % lights|length] %}
-                        {% set dd = {"hs_color": [xy|first, xy|last] } %}
+                        {% set dd = {"hs_color": [ range(hue_min|default(0),hue_max|default(360))|random, range(sat_min|default(99),sat_max|default(101))|random] } %}
                       {% else %}
                         {% set dd = { 
                           "hs_color": [(oldcol[0]+10)%360,oldcol[1]],
