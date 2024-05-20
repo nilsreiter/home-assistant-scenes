@@ -22,6 +22,7 @@ blueprint:
     ### 2.5
     
     - Added input `stop_when_lights_turn_off` to allow running the script continuously.
+    - Added input `debug` to generate debug messages in the log.
     ### 2.4
     
     - It is now possible to also specify devices. If a device has multiple entities from the
@@ -189,6 +190,13 @@ blueprint:
       default: true
       selector:
         boolean: null
+    debug:
+      name: Generate debug log output?
+      description: >-
+        If true, the script generates a few log messages.
+      default: false
+      selector:
+        boolean: null
 mode: restart
 fields:
   scene:
@@ -324,6 +332,7 @@ variables:
   skipgroups: !input skipgroups
   transition: !input transition
   stop_when_lights_turn_off: !input stop_when_lights_turn_off
+  debug: !input debug
   scenes: |-
     {% set scenes = {
       "Blossom":{"colors":[[0.5119,0.4249],[0.3972,0.4025],[0.4419,0.4164],[0.2674,0.3018],[0.24,0.2761]]},
@@ -503,6 +512,14 @@ sequence:
               value: "{{ scene }}"
             target:
               entity_id: !input report_entity
+  - if: "{{ debug }}"
+    then:
+      - service: logbook.log
+        data:
+          name: "{{ this.attributes.friendly_name }}"
+          message: >-
+            Running dynamic scene {{ scene }} with {{ lights|length }} lights: {{ lights|list }}.
+          entity_id: "{{ this.entity_id }}"
   - repeat:
       while: >-
         {{ repeat.index == 1 or (
@@ -510,6 +527,14 @@ sequence:
           (( lights | list | count ) == (lights | select('is_state', 'on') | list | count))
         ) }}
       sequence:
+        - if: "{{ debug }}"
+          then:
+            - service: logbook.log
+              data:
+                name: "{{ this.attributes.friendly_name }}"
+                message: >-
+                  Entering loop {{ repeat.index }}
+                entity_id: "{{ this.entity_id }}"
         - variables:
             colors: |-
               # shuffle color order
