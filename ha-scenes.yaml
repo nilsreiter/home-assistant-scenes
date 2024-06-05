@@ -21,6 +21,10 @@ blueprint:
     setup is to instantiate the blueprint for each area in which it will be run.
 
     ## Changelog 
+
+    ### 2.5.2
+
+    - Fixed typo - renamed Magneto to Magento
     
     ### 2.5.1
     
