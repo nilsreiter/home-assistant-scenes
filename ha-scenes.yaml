@@ -45,13 +45,9 @@ blueprint:
     ### 3.0
     
     - Added default Hue scenes (Bright, Concentrate, Cool bright, Dimmed, Energize, Nightlight, Read, Relax, Rest). 
-    
     - Scene selection dropdown now shows scene set (Cozy, Defaults, Dreamy, Futuristic, Lush, Luxurious, Party vibes, Peaceful, Pure, Refreshing, Serenity, Sunrise). When launching the script (e.g. as an action), users can use the simple name as before, or a combination of set and scene name (e.g., `Cozy: Savanna sunset`).
-    
     - The script now includes pre-defined brightness settings. When starting, one now has three options: a) Define a brightness value, b) use the scene-defined value, and c) leave the brightness as it is.
-    
     - As part of the blueprint input settings, it is now possible to also set default values for the script. All script fields can be specified, and the script can then be run without any arguments (e.g., if you're mostly using one scene, you can set it as default).
-    
     - Fixed a bug for non-dynamic scenes
     
     ### 2.5.1
@@ -72,22 +68,15 @@ blueprint:
     ### 2.3
     
     - Selecting the lights is now done via proper lists, and no longer relies on parsing json
-    
     - New scene: Malibu pink
-    
     - Description of the scene field is shorter
-    
     - Added a report entity field. This can be a `input_text` entity and whenever a scene is set, the scene name is written into the entity.
     
     ### 2.2
     
     - Transition time is now a blueprint field.
-    
     - Repeat delay now has a default value of two minutes.
-    
     - Fixed bug in duration format.
-    
-    
     
     ### 2.1
     
@@ -96,11 +85,8 @@ blueprint:
     ### 2.0
 
     - Made into a blueprint. Intended use case: Instantiate blueprint for each area (then they can run independently in parallel).
-
     - Supports loop mode, a.k.a. dynamic scenes
-
     - Can exclude lights by manufacturer
-
     - Select lights by labels
 
     ## Scene images
