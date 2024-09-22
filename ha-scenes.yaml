@@ -95,13 +95,9 @@ blueprint:
     licenses. The following is a list of (some) scenes and image sources:
 
     - Savanna Sunset: https://www.flickr.com/photos/ladydragonflyherworld/6293722846
-
     - Majestic Morning: https://unsplash.com/photos/aerial-photo-of-foggy-trees-and-mountains-dbu1zrkZZuo
-
     - Horizon: https://www.pexels.com/photo/rocks-on-water-2261500/
-
     - Tropical Twilight: https://www.flickr.com/photos/130079987@N02/16342014082
-
     - Crocus: https://unsplash.com/photos/close-up-photo-of-purple-petaled-flower-hB_xgEXucQs
   author: Nils Reiter
   homeassistant:
