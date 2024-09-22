@@ -1,146 +1,97 @@
-In order to phase out the Hue Bridge, I was looking for a way to have nicely colored scenes in HA, similar to the Hue ones. I am only aware of [this discussion](https://community.home-assistant.io/t/select-activate-hue-scenes-in-new-v2-api-setup/356057), but it relies on the hue bridge.
+This script replicates Hue scenes for Home Assistant. Each scene has five different colors represented by XY values. These colors are distributed randomly on the participating lights (must support XY or RGB color modes) -- each light gets a different color.
 
-My solution relies on three parts, and is also described [here in the Home Assistant Forum](https://community.home-assistant.io/t/hue-scenes-without-hue-bridge/623711):
+The script can run in two modes, selectable *at runtime*, corresponding to  setting lights once or repeatedly. If `repeat_delay` is specified at the start of the script, it runs continuously, with the specified delay in between rounds. In this case, the end of the script is determined by the `stop_when_lights_turn_off` parameter: If set to true, the script turns off when one of the participating lights is turned off. If set to false, the script runs until it is turned off.
 
-# 1. The script
+If `repeat_delay` is left empty or set to 0:00:00, lights are set once and the script ends.
 
-The classic script can still be found in `script.yaml`. The current version, however, is a script blueprint, residing in `ha-scenes.yaml`.
+The script has various configuration options, described below. 
 
-When importing the blueprint, one has to select the lights it applies to (or areas or devices or labels), and a few other basic properties. Other features can (and need to) be selected when starting the script.
+## Usage
 
-## Setting a scene
-Setting a scene with this script is done via a service call:
+The intended setup is to instantiate the blueprint for each area in which it will be run. To facilitate daily use, you can define buttons as pre-defined action call. To launch the scene "Savanna sunset" as a dynamic scene, you can define a mushroom card like this:
 
-```yaml
-service: script.1712410790992
+```
+type: custom:mushroom-template-card
+primary: Savanna sunset
+picture: /local/hue/Savanna sunset.jpg
+tap_action:
+  action: call-service
+  service: script.hue_like_scenes
+  target: {}
+  data:
+    scene: Savanna sunset
+```
+
+If called as part of another script, make sure to use the action `script.turn_on`, so that it runs in the background ([see here](https://www.home-assistant.io/integrations/script/#waiting-for-script-to-complete)):
+
+```
+action: script.turn_on
 data:
-  scene: Savanna sunset
-  repeat_delay:
-    hours: 0
-    minutes: 2
-    seconds: 30
-  onlyonlights: false
-  brightness: 100
-  transition: 5
+  variables:
+    scene: Savanna sunset
+metadata: {}
+target:
+  entity_id: script.hue_like_scenes
 ```
 
-The exact service name depends on how you name the script. If `repeat_delay` is not specified, lights are assigned once.
-
-# 2. The colors
-
-I took the color definitions from [here](https://gist.github.com/Hypfer/a0a8b5b9429831a7306ec4300077eaaa). Several scenes seemed to be missing, so I added them with this snippet in the developer tools, after applying the official scene on a set of lights:
 
 
-```jinja2
-{%- set lightstates -%}
-[{%- for l in ["light.example1", "light.example2"] -%}
-"{{state_attr(l,"xy_color")|list }}"
-{% if not loop.last %},{%endif%}
-{%- endfor -%}]
-{%- endset -%}
+## Changelog 
 
-{% for xy in lightstates|from_json|unique -%}
-{{xy}}
-{% if not loop.last %},{%endif%}
-{%- endfor -%}
-```
-## More Colors
+### 3.0
 
-The above snippet can be used to extract colors from existing Hue scenes. Another source for color palettes is [this page](https://colorpalettes.net).
+- Added default Hue scenes (Bright, Concentrate, Cool bright, Dimmed, Energize, Nightlight, Read, Relax, Rest). 
+- Scene selection dropdown now shows scene set (Cozy, Defaults, Dreamy, Futuristic, Lush, Luxurious, Party vibes, Peaceful, Pure, Refreshing, Serenity, Sunrise). When launching the script (e.g. as an action), users can use the simple name as before, or a combination of set and scene name (e.g., `Cozy: Savanna sunset`).
+- The script now includes pre-defined brightness settings. When starting, one now has three options: a) Define a brightness value, b) use the scene-defined value, and c) leave the brightness as it is.
+- As part of the blueprint input settings, it is now possible to also set default values for the script. All script fields can be specified, and the script can then be run without any arguments (e.g., if you're mostly using one scene, you can set it as default).
+- Fixed a bug for non-dynamic scenes
 
-# 3. The UI
+### 2.5.1
 
-My dashboards are heavily based on the entities and auto-entities cards, so I wanted to integrated these scenes into that, and came up with the above UI. It uses [paper-buttons-row](https://github.com/jcwillox/lovelace-paper-buttons-row) to show the buttons. A short tap activates the scene on all lights currently on, and a double tap activates it on all lights in the area.
+- Fixed a bug in assigning first colors for colorloop.
 
-## Version 1
+### 2.5
 
-![](gfx/v1.jpeg)
+- Added input `stop_when_lights_turn_off` to allow running the script continuously.
+- Added scene "Colorloop", which iterates over the entire color wheel. Colorloop uses hs color scheme, and only changes the hue value without touch the saturation.
+- Re-added a scene consisting of random colors. Note that random colors are selected once when the script starts and then distributed over the lights.
+- Added input `debug` to generate debug messages in the log.
 
-```yaml
-- type: custom:paper-buttons-row
-  base_config:
-    name: false
-    styles:
-      icon:
-        height: 64px;
-        width: 64px;
-    tap_action:
-      action: call-service
-      service: script.light_hue_scene
-      service_data:
-        onlyonlights: true
-        skipgroups: true
-        target:
-          area_id: wohnzimmer
-    double_tap_action:
-      action: call-service
-      service: script.light_hue_scene
-      service_data:
-        onlyonlights: false
-        skipgroups: true
-        target:
-          area_id: wohnzimmer
-  buttons:
-    - entity: script.light_hue_scene
-      image: /local/hue/savanna-sunset.jpg
-      tap_action:
-        service_data:
-          scene: Savanna Sunset
-      hold_action:
-        service_data:
-          scene: Savanna Sunset
-    - entity: script.light_hue_scene
-      image: /local/hue/horizon.jpg
-      tap_action:
-        service_data:
-          scene: Horizon
-      hold_action:
-        service_data:
-          scene: Horizon
-    - entity: script.light_hue_scene
-      image: /local/hue/golden-pond.jpg
-      tap_action:
-        service_data:
-          scene: Golden Pond
-      hold_action:
-        service_data:
-          scene: Golden Pond
-```
+### 2.4
 
-## Version 2
+- It is now possible to also specify devices. If a device has multiple entities from the light domain, all will be added individually.
 
-Alternatively, if you're using [`lovelace_gen`](https://github.com/thomasloven/hass-lovelace_gen), the row definition in `ui.yaml` might be helpful.
+### 2.3
 
-![](gfx/v2.png)
+- Selecting the lights is now done via proper lists, and no longer relies on parsing json
+- New scene: Malibu pink
+- Description of the scene field is shorter
+- Added a report entity field. This can be a `input_text` entity and whenever a scene is set, the scene name is written into the entity.
 
-## Version 3
+### 2.2
 
-After playing around with the new sections dashboard, I changed the UI to a grid with picture cards:
+- Transition time is now a blueprint field.
+- Repeat delay now has a default value of two minutes.
+- Fixed bug in duration format.
 
-![](gfx/v3.png)
+### 2.1
 
-```yaml
-type: grid
-square: false
-cards:
-  - type: picture
-    image_entity: image.savanna_sunset
-    double_tap_action:
-      action: call-service
-      service: script.light_hue_scene
-      target: {}
-      data:
-        scene: Savanna Sunset
-        onlyonlights: true
-        skipgroups: true
-        target:
-          area_id: wohnzimmer
-    tap_action:
-      action: call-service
-      service: input_select.select_option
-      target:
-        entity_id: input_select.wohnzimmer_lichtszenen
-      data:
-        option: Savanna Sunset
+- The blueprint now contains all the Hue color scenes that are listed [here](https://gist.github.com/Hypfer/a0a8b5b9429831a7306ec4300077eaaa).
 
-````
+### 2.0
+
+- Made into a blueprint. Intended use case: Instantiate blueprint for each area (then they can run independently in parallel).
+- Supports loop mode, a.k.a. dynamic scenes
+- Can exclude lights by manufacturer
+- Select lights by labels
+
+## Scene images
+
+The images used in the Hue app to represent a scene use creative commons 
+licenses. The following is a list of (some) scenes and image sources:
+
+- Savanna Sunset: https://www.flickr.com/photos/ladydragonflyherworld/6293722846
+- Majestic Morning: https://unsplash.com/photos/aerial-photo-of-foggy-trees-and-mountains-dbu1zrkZZuo
+- Horizon: https://www.pexels.com/photo/rocks-on-water-2261500/
+- Tropical Twilight: https://www.flickr.com/photos/130079987@N02/16342014082
+- Crocus: https://unsplash.com/photos/close-up-photo-of-purple-petaled-flower-hB_xgEXucQs
