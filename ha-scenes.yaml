@@ -42,6 +42,11 @@ blueprint:
 
     ## Changelog 
     
+    ### 3.1
+    
+    - The list of scenes that are offered can now also be restricted as part of the blueprint setup. I.e., if you know that some scenes will never be needed, you can deselect them, and they will not be shown in the dropdown. They can still be selected as part of an action call.
+    - Default scenes (Bright, Concentrate, Cool bright, Dimmed, Energize, Nightlight, Read, Relax, Rest) will now also be applied to bulbs that don't support colors, but only color temperature. In addition, there is a toggle setting in the blueprint to always include non-color bulbs for all scenes.
+    
     ### 3.0
     
     - Added default Hue scenes (Bright, Concentrate, Cool bright, Dimmed, Energize, Nightlight, Read, Relax, Rest). 
@@ -112,6 +117,185 @@ blueprint:
         target:
           entity:
             domain: light
+    scene_pre_selection:
+      name: Scenes
+      description: >-
+        Select scenes to be offered in the UI
+      default:
+            - "Cozy: Dreamy dusk"
+            - "Cozy: Golden pond"
+            - "Cozy: Honolulu"
+            - "Cozy: Rolling hills"
+            - "Cozy: Ruby glow"
+            - "Cozy: Savanna sunset"
+            - "Cozy: Tropical twilight"
+            - "Cozy: Warm embrace"
+            - "Defaults: Bright"
+            - "Defaults: Concentrate"
+            - "Defaults: Cool bright"
+            - "Defaults: Dimmed"
+            - "Defaults: Energize"
+            - "Defaults: Nightlight"
+            - "Defaults: Read"
+            - "Defaults: Relax"
+            - "Defaults: Rest"
+            - "Dreamy: Adrift"
+            - "Dreamy: Blue lagoon"
+            - "Dreamy: Lake Placid"
+            - "Dreamy: Majestic morning"
+            - "Dreamy: Palm Beach"
+            - "Dreamy: Pensive"
+            - "Dreamy: Still waters"
+            - "Dreamy: Sundown"
+            - "Futuristic: Disturbia"
+            - "Futuristic: Hal"
+            - "Futuristic: Magneto"
+            - "Futuristic: Soho"
+            - "Futuristic: Tyrell"
+            - "Futuristic: Vapor wave"
+            - "Lush: Amber bloom"
+            - "Lush: Blue Planet"
+            - "Lush: Forest adventure"
+            - "Lush: Lily"
+            - "Lush: Meriete"
+            - "Lush: Orange fields"
+            - "Lush: Painted sky"
+            - "Lush: Winter beauty"
+            - "Luxurious: Emerald flutter"
+            - "Luxurious: Memento"
+            - "Luxurious: Resplendent"
+            - "Luxurious: Scarlet dream"
+            - "Party vibes: Cancun"
+            - "Party vibes: Chinatown"
+            - "Party vibes: Fairfax"
+            - "Party vibes: Ibiza"
+            - "Party vibes: Malibu pink"
+            - "Party vibes: Miami"
+            - "Party vibes: Motown"
+            - "Party vibes: Osaka"
+            - "Party vibes: Rio"
+            - "Party vibes: Tokyo"
+            - "Peaceful: Emerald isle"
+            - "Peaceful: Frosty dawn"
+            - "Peaceful: Lake mist"
+            - "Peaceful: Mountain breeze"
+            - "Peaceful: Ocean dawn"
+            - "Peaceful: Spring blossom"
+            - "Peaceful: Sunday morning"
+            - "Pure: Amethyst valley"
+            - "Pure: Autumn gold"
+            - "Pure: Hazy days"
+            - "Pure: Midsummer sun"
+            - "Pure: Midwinter"
+            - "Pure: Misty ridge"
+            - "Pure: Spring lake"
+            - "Pure: Winter mountain"
+            - "Refreshing: Blossom"
+            - "Refreshing: Crocus"
+            - "Refreshing: Narcissa"
+            - "Refreshing: Precious"
+            - "Serenity: Arctic aurora"
+            - "Serenity: Blood moon"
+            - "Serenity: Galaxy"
+            - "Serenity: Moonlight"
+            - "Serenity: Nebula"
+            - "Serenity: Starlight"
+            - "Sunrise: Beginnings"
+            - "Sunrise: First light"
+            - "Sunrise: Horizon"
+            - "Sunrise: Sunflare"
+            - "Sunrise: Valley dawn"
+            - "Special: Colorloop"
+            - "Special: Random"
+      selector:
+        select:
+          options:
+            - "Cozy: Dreamy dusk"
+            - "Cozy: Golden pond"
+            - "Cozy: Honolulu"
+            - "Cozy: Rolling hills"
+            - "Cozy: Ruby glow"
+            - "Cozy: Savanna sunset"
+            - "Cozy: Tropical twilight"
+            - "Cozy: Warm embrace"
+            - "Defaults: Bright"
+            - "Defaults: Concentrate"
+            - "Defaults: Cool bright"
+            - "Defaults: Dimmed"
+            - "Defaults: Energize"
+            - "Defaults: Nightlight"
+            - "Defaults: Read"
+            - "Defaults: Relax"
+            - "Defaults: Rest"
+            - "Dreamy: Adrift"
+            - "Dreamy: Blue lagoon"
+            - "Dreamy: Lake Placid"
+            - "Dreamy: Majestic morning"
+            - "Dreamy: Palm Beach"
+            - "Dreamy: Pensive"
+            - "Dreamy: Still waters"
+            - "Dreamy: Sundown"
+            - "Futuristic: Disturbia"
+            - "Futuristic: Hal"
+            - "Futuristic: Magneto"
+            - "Futuristic: Soho"
+            - "Futuristic: Tyrell"
+            - "Futuristic: Vapor wave"
+            - "Lush: Amber bloom"
+            - "Lush: Blue Planet"
+            - "Lush: Forest adventure"
+            - "Lush: Lily"
+            - "Lush: Meriete"
+            - "Lush: Orange fields"
+            - "Lush: Painted sky"
+            - "Lush: Winter beauty"
+            - "Luxurious: Emerald flutter"
+            - "Luxurious: Memento"
+            - "Luxurious: Resplendent"
+            - "Luxurious: Scarlet dream"
+            - "Party vibes: Cancun"
+            - "Party vibes: Chinatown"
+            - "Party vibes: Fairfax"
+            - "Party vibes: Ibiza"
+            - "Party vibes: Malibu pink"
+            - "Party vibes: Miami"
+            - "Party vibes: Motown"
+            - "Party vibes: Osaka"
+            - "Party vibes: Rio"
+            - "Party vibes: Tokyo"
+            - "Peaceful: Emerald isle"
+            - "Peaceful: Frosty dawn"
+            - "Peaceful: Lake mist"
+            - "Peaceful: Mountain breeze"
+            - "Peaceful: Ocean dawn"
+            - "Peaceful: Spring blossom"
+            - "Peaceful: Sunday morning"
+            - "Pure: Amethyst valley"
+            - "Pure: Autumn gold"
+            - "Pure: Hazy days"
+            - "Pure: Midsummer sun"
+            - "Pure: Midwinter"
+            - "Pure: Misty ridge"
+            - "Pure: Spring lake"
+            - "Pure: Winter mountain"
+            - "Refreshing: Blossom"
+            - "Refreshing: Crocus"
+            - "Refreshing: Narcissa"
+            - "Refreshing: Precious"
+            - "Serenity: Arctic aurora"
+            - "Serenity: Blood moon"
+            - "Serenity: Galaxy"
+            - "Serenity: Moonlight"
+            - "Serenity: Nebula"
+            - "Serenity: Starlight"
+            - "Sunrise: Beginnings"
+            - "Sunrise: First light"
+            - "Sunrise: Horizon"
+            - "Sunrise: Sunflare"
+            - "Sunrise: Valley dawn"
+            - "Special: Colorloop"
+            - "Special: Random"
+          multiple: true
     default_section:
       name: Script defaults
       icon: mdi:cogs
@@ -200,6 +384,14 @@ blueprint:
               min: 1
               max: 101
           default: 101
+    include_mode_color_temp:
+      name: Include bulbs with `color_temp`.
+      description: >-
+        If enabled, the script will always include bulbs that support `color_temp` as color mode. If disabled, 
+        the script only include these bulbs for default scenes.
+      default: false
+      selector:
+        boolean: null
     skipgroups:
       name: Skip groups
       description: >-
@@ -279,92 +471,7 @@ fields:
     example: "Cozy: Savanna sunset"
     selector:
       select:
-        options:
-          - "Cozy: Dreamy dusk"
-          - "Cozy: Golden pond"
-          - "Cozy: Honolulu"
-          - "Cozy: Rolling hills"
-          - "Cozy: Ruby glow"
-          - "Cozy: Savanna sunset"
-          - "Cozy: Tropical twilight"
-          - "Cozy: Warm embrace"
-          - "Defaults: Bright"
-          - "Defaults: Concentrate"
-          - "Defaults: Cool bright"
-          - "Defaults: Dimmed"
-          - "Defaults: Energize"
-          - "Defaults: Nightlight"
-          - "Defaults: Read"
-          - "Defaults: Relax"
-          - "Defaults: Rest"
-          - "Dreamy: Adrift"
-          - "Dreamy: Blue lagoon"
-          - "Dreamy: Lake Placid"
-          - "Dreamy: Majestic morning"
-          - "Dreamy: Palm Beach"
-          - "Dreamy: Pensive"
-          - "Dreamy: Still waters"
-          - "Dreamy: Sundown"
-          - "Futuristic: Disturbia"
-          - "Futuristic: Hal"
-          - "Futuristic: Magneto"
-          - "Futuristic: Soho"
-          - "Futuristic: Tyrell"
-          - "Futuristic: Vapor wave"
-          - "Lush: Amber bloom"
-          - "Lush: Blue Planet"
-          - "Lush: Forest adventure"
-          - "Lush: Lily"
-          - "Lush: Meriete"
-          - "Lush: Orange fields"
-          - "Lush: Painted sky"
-          - "Lush: Winter beauty"
-          - "Luxurious: Emerald flutter"
-          - "Luxurious: Memento"
-          - "Luxurious: Resplendent"
-          - "Luxurious: Scarlet dream"
-          - "Party vibes: Cancun"
-          - "Party vibes: Chinatown"
-          - "Party vibes: Fairfax"
-          - "Party vibes: Ibiza"
-          - "Party vibes: Malibu pink"
-          - "Party vibes: Miami"
-          - "Party vibes: Motown"
-          - "Party vibes: Osaka"
-          - "Party vibes: Rio"
-          - "Party vibes: Tokyo"
-          - "Peaceful: Emerald isle"
-          - "Peaceful: Frosty dawn"
-          - "Peaceful: Lake mist"
-          - "Peaceful: Mountain breeze"
-          - "Peaceful: Ocean dawn"
-          - "Peaceful: Spring blossom"
-          - "Peaceful: Sunday morning"
-          - "Pure: Amethyst valley"
-          - "Pure: Autumn gold"
-          - "Pure: Hazy days"
-          - "Pure: Midsummer sun"
-          - "Pure: Midwinter"
-          - "Pure: Misty ridge"
-          - "Pure: Spring lake"
-          - "Pure: Winter mountain"
-          - "Refreshing: Blossom"
-          - "Refreshing: Crocus"
-          - "Refreshing: Narcissa"
-          - "Refreshing: Precious"
-          - "Serenity: Arctic aurora"
-          - "Serenity: Blood moon"
-          - "Serenity: Galaxy"
-          - "Serenity: Moonlight"
-          - "Serenity: Nebula"
-          - "Serenity: Starlight"
-          - "Sunrise: Beginnings"
-          - "Sunrise: First light"
-          - "Sunrise: Horizon"
-          - "Sunrise: Sunflare"
-          - "Sunrise: Valley dawn"
-          - "Special: Colorloop"
-          - "Special: Random"
+        options: !input scene_pre_selection
   repeat_delay:
     selector:
       duration:
@@ -420,6 +527,7 @@ variables:
     {{ iif(repeat_delay, repeat_delay, iif(default_repeat_delay, default_repeat_delay, {})) }}
   report_entity: !input report_entity
   target: !input target
+  include_mode_color_temp: !input include_mode_color_temp
   sat_min: !input sat_min
   sat_max: !input sat_max
   hue_min: !input hue_min
@@ -622,7 +730,7 @@ variables:
     {% set ns.lights_temporary = [] %}
     {%- for ll in ns.l %}
       {%- set colormodes = state_attr(ll, "supported_color_modes") -%}
-      {%- if "xy" in colormodes or "rgb" in colormodes -%}
+      {%- if "xy" in colormodes or "rgb" in colormodes or (include_mode_color_temp and "color_temp" in colormodes) or (not include_mode_color_temp and scene_name in ["Bright", "Concentrate", "Cool bright", "Dimmed", "Energize", "Nightlight", "Read", "Relax", "Rest"]) -%}
         {% set ns.lights_temporary = ns.lights_temporary + [ll] %}
       {%- endif -%}
     {%- endfor -%}
