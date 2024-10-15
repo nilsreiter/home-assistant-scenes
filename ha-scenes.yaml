@@ -643,7 +643,7 @@ variables:
     {% endif %}
   brightness_value: |-
     {% if use_scene_brightness %}
-      {{ scenes[scene_name].b*100 }}
+      {{ (scenes[scene_name].b*100)|round(0, 'ceil') }}
     {% elif brightness %}
       {{ brightness }}
     {% else %}
