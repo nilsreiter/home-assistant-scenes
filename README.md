@@ -38,6 +38,16 @@ target:
 
 ## Changelog 
 
+### 3.1.1
+
+- Fixed a bug that sometimes set small brightness values to zero because of rounding. Thanks @Glennmen!
+
+### 3.1
+
+- The list of scenes that are offered can now also be restricted as part of the blueprint setup. I.e., if you know that some scenes will never be needed, you can deselect them, and they will not be shown in the dropdown. They can still be selected as part of an action call.
+- Default scenes (Bright, Concentrate, Cool bright, Dimmed, Energize, Nightlight, Read, Relax, Rest) will now also be applied to bulbs that don't support colors, but only color temperature. In addition, there is a toggle setting in the blueprint to always include non-color bulbs for all scenes.
+
+
 ### 3.0
 
 - Added default Hue scenes (Bright, Concentrate, Cool bright, Dimmed, Energize, Nightlight, Read, Relax, Rest). 
