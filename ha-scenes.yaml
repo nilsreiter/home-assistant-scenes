@@ -5,13 +5,13 @@ blueprint:
     This script replicates Hue scenes. Each scene has five different colors represented by XY values. These colors are distributed randomly on the participating lights (must support XY or RGB color modes) -- each light gets a different color.
 
     The script can run in two modes, selectable *at runtime*, corresponding to  setting lights once or repeatedly. If `repeat_delay` is specified at the start of the script, it runs continuously, with the specified delay in between rounds. In this case, the end of the script is determined by the `stop_when_lights_turn_off` parameter: If set to true, the script turns off when one of the participating lights is turned off. If set to false, the script runs until it is turned off.
-    
+
     If `repeat_delay` is left empty or set to 0:00:00, lights are set once and the script ends.
 
     The script has various configuration options, described below. 
 
     ## Usage
-    
+
     The intended setup is to instantiate the blueprint for each area in which it will be run. To facilitate daily use, you can define buttons as pre-defined action call. To launch the scene "Savanna sunset" as a dynamic scene, you can define a mushroom card like this:
 
     ```
@@ -25,9 +25,9 @@ blueprint:
       data:
         scene: Savanna sunset
     ```
-    
+
     If called as part of another script, make sure to use the action `script.turn_on`, so that it runs in the background ([see here](https://www.home-assistant.io/integrations/script/#waiting-for-script-to-complete)):
-    
+
     ```
     action: script.turn_on
     data:
@@ -37,58 +37,58 @@ blueprint:
     target:
       entity_id: script.hue_like_scenes
     ```
-    
-    
+
+
 
     ## Changelog 
-    
+
     ### 3.1.1
-    
+
     - Fixed a bug that sometimes set small brightness values to zero because of rounding. Thanks @Glennmen!
-    
+
     ### 3.1
-    
+
     - The list of scenes that are offered can now also be restricted as part of the blueprint setup. I.e., if you know that some scenes will never be needed, you can deselect them, and they will not be shown in the dropdown. They can still be selected as part of an action call.
     - Default scenes (Bright, Concentrate, Cool bright, Dimmed, Energize, Nightlight, Read, Relax, Rest) will now also be applied to bulbs that don't support colors, but only color temperature. In addition, there is a toggle setting in the blueprint to always include non-color bulbs for all scenes.
-    
+
     ### 3.0
-    
+
     - Added default Hue scenes (Bright, Concentrate, Cool bright, Dimmed, Energize, Nightlight, Read, Relax, Rest). 
     - Scene selection dropdown now shows scene set (Cozy, Defaults, Dreamy, Futuristic, Lush, Luxurious, Party vibes, Peaceful, Pure, Refreshing, Serenity, Sunrise). When launching the script (e.g. as an action), users can use the simple name as before, or a combination of set and scene name (e.g., `Cozy: Savanna sunset`).
     - The script now includes pre-defined brightness settings. When starting, one now has three options: a) Define a brightness value, b) use the scene-defined value, and c) leave the brightness as it is.
     - As part of the blueprint input settings, it is now possible to also set default values for the script. All script fields can be specified, and the script can then be run without any arguments (e.g., if you're mostly using one scene, you can set it as default).
     - Fixed a bug for non-dynamic scenes
-    
+
     ### 2.5.1
-    
+
     - Fixed a bug in assigning first colors for colorloop.
-    
+
     ### 2.5
-    
+
     - Added input `stop_when_lights_turn_off` to allow running the script continuously.
     - Added scene "Colorloop", which iterates over the entire color wheel. Colorloop uses hs color scheme, and only changes the hue value without touch the saturation.
     - Re-added a scene consisting of random colors. Note that random colors are selected once when the script starts and then distributed over the lights.
     - Added input `debug` to generate debug messages in the log.
-    
+
     ### 2.4
-    
+
     - It is now possible to also specify devices. If a device has multiple entities from the light domain, all will be added individually.
-    
+
     ### 2.3
-    
+
     - Selecting the lights is now done via proper lists, and no longer relies on parsing json
     - New scene: Malibu pink
     - Description of the scene field is shorter
     - Added a report entity field. This can be a `input_text` entity and whenever a scene is set, the scene name is written into the entity.
-    
+
     ### 2.2
-    
+
     - Transition time is now a blueprint field.
     - Repeat delay now has a default value of two minutes.
     - Fixed bug in duration format.
-    
+
     ### 2.1
-    
+
     - The blueprint now contains all the Hue color scenes that are listed [here](https://gist.github.com/Hypfer/a0a8b5b9429831a7306ec4300077eaaa).
 
     ### 2.0
@@ -126,91 +126,128 @@ blueprint:
       description: >-
         Select scenes to be offered in the UI
       default:
-            - "Cozy: Dreamy dusk"
-            - "Cozy: Golden pond"
-            - "Cozy: Honolulu"
-            - "Cozy: Rolling hills"
-            - "Cozy: Ruby glow"
-            - "Cozy: Savanna sunset"
-            - "Cozy: Tropical twilight"
-            - "Cozy: Warm embrace"
-            - "Defaults: Bright"
-            - "Defaults: Concentrate"
-            - "Defaults: Cool bright"
-            - "Defaults: Dimmed"
-            - "Defaults: Energize"
-            - "Defaults: Nightlight"
-            - "Defaults: Read"
-            - "Defaults: Relax"
-            - "Defaults: Rest"
-            - "Dreamy: Adrift"
-            - "Dreamy: Blue lagoon"
-            - "Dreamy: Lake Placid"
-            - "Dreamy: Majestic morning"
-            - "Dreamy: Palm Beach"
-            - "Dreamy: Pensive"
-            - "Dreamy: Still waters"
-            - "Dreamy: Sundown"
-            - "Futuristic: Disturbia"
-            - "Futuristic: Hal"
-            - "Futuristic: Magneto"
-            - "Futuristic: Soho"
-            - "Futuristic: Tyrell"
-            - "Futuristic: Vapor wave"
-            - "Lush: Amber bloom"
-            - "Lush: Blue Planet"
-            - "Lush: Forest adventure"
-            - "Lush: Lily"
-            - "Lush: Meriete"
-            - "Lush: Orange fields"
-            - "Lush: Painted sky"
-            - "Lush: Winter beauty"
-            - "Luxurious: Emerald flutter"
-            - "Luxurious: Memento"
-            - "Luxurious: Resplendent"
-            - "Luxurious: Scarlet dream"
-            - "Party vibes: Cancun"
-            - "Party vibes: Chinatown"
-            - "Party vibes: Fairfax"
-            - "Party vibes: Ibiza"
-            - "Party vibes: Malibu pink"
-            - "Party vibes: Miami"
-            - "Party vibes: Motown"
-            - "Party vibes: Osaka"
-            - "Party vibes: Rio"
-            - "Party vibes: Tokyo"
-            - "Peaceful: Emerald isle"
-            - "Peaceful: Frosty dawn"
-            - "Peaceful: Lake mist"
-            - "Peaceful: Mountain breeze"
-            - "Peaceful: Ocean dawn"
-            - "Peaceful: Spring blossom"
-            - "Peaceful: Sunday morning"
-            - "Pure: Amethyst valley"
-            - "Pure: Autumn gold"
-            - "Pure: Hazy days"
-            - "Pure: Midsummer sun"
-            - "Pure: Midwinter"
-            - "Pure: Misty ridge"
-            - "Pure: Spring lake"
-            - "Pure: Winter mountain"
-            - "Refreshing: Blossom"
-            - "Refreshing: Crocus"
-            - "Refreshing: Narcissa"
-            - "Refreshing: Precious"
-            - "Serenity: Arctic aurora"
-            - "Serenity: Blood moon"
-            - "Serenity: Galaxy"
-            - "Serenity: Moonlight"
-            - "Serenity: Nebula"
-            - "Serenity: Starlight"
-            - "Sunrise: Beginnings"
-            - "Sunrise: First light"
-            - "Sunrise: Horizon"
-            - "Sunrise: Sunflare"
-            - "Sunrise: Valley dawn"
-            - "Special: Colorloop"
-            - "Special: Random"
+        - "Cozy: Dreamy dusk"
+        - "Cozy: Golden pond"
+        - "Cozy: Honolulu"
+        - "Cozy: Rolling hills"
+        - "Cozy: Ruby glow"
+        - "Cozy: Savanna sunset"
+        - "Cozy: Tropical twilight"
+        - "Cozy: Warm embrace"
+        - "Daily: Arise"
+        - "Daily: Nighttime"
+        - "Daily: Shine"
+        - "Daily: Sleepy"
+        - "Daily: Storybook"
+        - "Daily: Unwind"
+        - "Defaults: Bright"
+        - "Defaults: Concentrate"
+        - "Defaults: Cool bright"
+        - "Defaults: Dimmed"
+        - "Defaults: Energize"
+        - "Defaults: Nightlight"
+        - "Defaults: Read"
+        - "Defaults: Relax"
+        - "Defaults: Rest"
+        - "Dreamy: Adrift"
+        - "Dreamy: Blue lagoon"
+        - "Dreamy: Lake Placid"
+        - "Dreamy: Majestic morning"
+        - "Dreamy: Palm Beach"
+        - "Dreamy: Pensive"
+        - "Dreamy: Still waters"
+        - "Dreamy: Sundown"
+        - "Futuristic: Disturbia"
+        - "Futuristic: Hal"
+        - "Futuristic: Magneto"
+        - "Futuristic: Soho"
+        - "Futuristic: Tyrell"
+        - "Futuristic: Vapor wave"
+        - "Halloween: Glowing grins"
+        - "Halloween: Hocus pocus"
+        - "Halloween: Pandemonium"
+        - "Halloween: Phantom"
+        - "Halloween: Spellbound"
+        - "Halloween: Toil and trouble"
+        - "Halloween: Trick or treat"
+        - "Halloween: Witching hour"
+        - "Lush: Amber bloom"
+        - "Lush: Blue planet"
+        - "Lush: Forest adventure"
+        - "Lush: Lily"
+        - "Lush: Meriete"
+        - "Lush: Orange fields"
+        - "Lush: Painted sky"
+        - "Lush: Winter beauty"
+        - "Luxurious: Emerald flutter"
+        - "Luxurious: Memento"
+        - "Luxurious: Resplendent"
+        - "Luxurious: Scarlet dream"
+        - "Party vibes: Cancun"
+        - "Party vibes: Chinatown"
+        - "Party vibes: Fairfax"
+        - "Party vibes: Ibiza"
+        - "Party vibes: Miami"
+        - "Party vibes: Motown"
+        - "Party vibes: Osaka"
+        - "Party vibes: Rio"
+        - "Party vibes: Tokyo"
+        - "Peaceful: Emerald isle"
+        - "Peaceful: Frosty dawn"
+        - "Peaceful: Lake mist"
+        - "Peaceful: Mountain breeze"
+        - "Peaceful: Ocean dawn"
+        - "Peaceful: Spring blossom"
+        - "Peaceful: Sunday morning"
+        - "Pure: Amethyst valley"
+        - "Pure: Autumn gold"
+        - "Pure: Hazy days"
+        - "Pure: Midsummer sun"
+        - "Pure: Midwinter"
+        - "Pure: Misty ridge"
+        - "Pure: Spring lake"
+        - "Pure: Winter mountain"
+        - "Race Day: Bahrain"
+        - "Race Day: Miami"
+        - "Race Day: Silverstone"
+        - "Race Day: Singapore"
+        - "Race Day: Suzuka"
+        - "Race Day: São Paulo"
+        - "Race Day: Zandvoort"
+        - "Refreshing: Blossom"
+        - "Refreshing: Crocus"
+        - "Refreshing: Narcissa"
+        - "Refreshing: Precious"
+        - "Romantic: City of love"
+        - "Romantic: Glitz and glam"
+        - "Romantic: Lovebirds"
+        - "Romantic: Promise"
+        - "Romantic: Ruby romance"
+        - "Romantic: Smitten"
+        - "Romantic: Sunset allure"
+        - "Serenity: Arctic aurora"
+        - "Serenity: Blood moon"
+        - "Serenity: Galaxy"
+        - "Serenity: Moonlight"
+        - "Serenity: Nebula"
+        - "Serenity: Starlight"
+        - "Sunrise: Beginnings"
+        - "Sunrise: First light"
+        - "Sunrise: Horizon"
+        - "Sunrise: Sunflare"
+        - "Sunrise: Valley dawn"
+        - "Winter holidays: Color burst"
+        - "Winter holidays: Crystalline"
+        - "Winter holidays: Festive fun"
+        - "Winter holidays: Golden star"
+        - "Winter holidays: Jolly"
+        - "Winter holidays: Nutcracker"
+        - "Winter holidays: Rosy sparkle"
+        - "Winter holidays: Silent night"
+        - "Winter holidays: Snow sparkle"
+        - "Winter holidays: Under the tree"
+        - "Special: Colorloop"
+        - "Special: Random"
       selector:
         select:
           options:
@@ -222,6 +259,12 @@ blueprint:
             - "Cozy: Savanna sunset"
             - "Cozy: Tropical twilight"
             - "Cozy: Warm embrace"
+            - "Daily: Arise"
+            - "Daily: Nighttime"
+            - "Daily: Shine"
+            - "Daily: Sleepy"
+            - "Daily: Storybook"
+            - "Daily: Unwind"
             - "Defaults: Bright"
             - "Defaults: Concentrate"
             - "Defaults: Cool bright"
@@ -245,8 +288,16 @@ blueprint:
             - "Futuristic: Soho"
             - "Futuristic: Tyrell"
             - "Futuristic: Vapor wave"
+            - "Halloween: Glowing grins"
+            - "Halloween: Hocus pocus"
+            - "Halloween: Pandemonium"
+            - "Halloween: Phantom"
+            - "Halloween: Spellbound"
+            - "Halloween: Toil and trouble"
+            - "Halloween: Trick or treat"
+            - "Halloween: Witching hour"
             - "Lush: Amber bloom"
-            - "Lush: Blue Planet"
+            - "Lush: Blue planet"
             - "Lush: Forest adventure"
             - "Lush: Lily"
             - "Lush: Meriete"
@@ -261,7 +312,6 @@ blueprint:
             - "Party vibes: Chinatown"
             - "Party vibes: Fairfax"
             - "Party vibes: Ibiza"
-            - "Party vibes: Malibu pink"
             - "Party vibes: Miami"
             - "Party vibes: Motown"
             - "Party vibes: Osaka"
@@ -282,10 +332,24 @@ blueprint:
             - "Pure: Misty ridge"
             - "Pure: Spring lake"
             - "Pure: Winter mountain"
+            - "Race Day: Bahrain"
+            - "Race Day: Miami"
+            - "Race Day: Silverstone"
+            - "Race Day: Singapore"
+            - "Race Day: Suzuka"
+            - "Race Day: São Paulo"
+            - "Race Day: Zandvoort"
             - "Refreshing: Blossom"
             - "Refreshing: Crocus"
             - "Refreshing: Narcissa"
             - "Refreshing: Precious"
+            - "Romantic: City of love"
+            - "Romantic: Glitz and glam"
+            - "Romantic: Lovebirds"
+            - "Romantic: Promise"
+            - "Romantic: Ruby romance"
+            - "Romantic: Smitten"
+            - "Romantic: Sunset allure"
             - "Serenity: Arctic aurora"
             - "Serenity: Blood moon"
             - "Serenity: Galaxy"
@@ -297,6 +361,16 @@ blueprint:
             - "Sunrise: Horizon"
             - "Sunrise: Sunflare"
             - "Sunrise: Valley dawn"
+            - "Winter holidays: Color burst"
+            - "Winter holidays: Crystalline"
+            - "Winter holidays: Festive fun"
+            - "Winter holidays: Golden star"
+            - "Winter holidays: Jolly"
+            - "Winter holidays: Nutcracker"
+            - "Winter holidays: Rosy sparkle"
+            - "Winter holidays: Silent night"
+            - "Winter holidays: Snow sparkle"
+            - "Winter holidays: Under the tree"
             - "Special: Colorloop"
             - "Special: Random"
           multiple: true
@@ -481,7 +555,7 @@ fields:
       duration:
     name: Repeat delay
     default: !input default_repeat_delay
-    example: "{\"hours\": 0, \"minutes\": 2, \"seconds\": 0}"
+    example: '{"hours": 0, "minutes": 2, "seconds": 0}'
     description: >-
       If set to a time > 0, the script runs in loop mode. 
       After the delay, the script repeats and assigns the
@@ -498,9 +572,9 @@ fields:
     default: !input default_onlyonlights
     example: false
     selector:
-      boolean: null 
+      boolean: null
   use_scene_brightness:
-    name: Use predefined scene brightness 
+    name: Use predefined scene brightness
     description: >-
       If set, the script uses brightness values pre-defined for each scene.
     required: false
@@ -542,112 +616,149 @@ variables:
   stop_when_lights_turn_off: !input stop_when_lights_turn_off
   debug: !input debug
   scenes: |-
-    {% set scenes = {
-      "Adrift":{"c":[[0.1547,0.1045],[0.2044,0.164],[0.4802,0.3112],[0.1743,0.1333],[0.2789,0.2025]],"b":0.647,"s":"Dreamy"},
-      "Amber bloom":{"c":[[0.4934,0.3675],[0.5717,0.3983],[0.5341,0.3975],[0.6178,0.3413],[0.5946,0.3811]],"b":0.796,"s":"Lush"},
-      "Amethyst valley":{"c":[[0.2977,0.2444],[0.25,0.1781],[0.2278,0.1424],[0.2752,0.2042],[0.2883,0.2235]],"b":0.937,"s":"Pure"},
-      "Arctic aurora":{"c":[[0.1868,0.3328],[0.1581,0.1508],[0.1541,0.0844],[0.2072,0.4525],[0.2359,0.3855]],"b":0.263,"s":"Serenity"},
-      "Autumn gold":{"c":[[0.457,0.4406],[0.4636,0.4073],[0.4436,0.4271],[0.4714,0.3964],[0.4427,0.4017]],"b":0.796,"s":"Pure"},
-      "Beginnings":{"c":[[0.1587,0.1368],[0.3537,0.2546],[0.1914,0.1543],[0.1652,0.1455],[0.2726,0.2045]],"b":0.204,"s":"Sunrise"},
-      "Blood moon":{"c":[[0.3041,0.2368],[0.1596,0.0684],[0.3918,0.2958],[0.1803,0.1298],[0.465,0.3446]],"b":0.204,"s":"Serenity"},
-      "Blossom":{"c":[[0.5119,0.4249],[0.3972,0.4025],[0.4419,0.4164],[0.2674,0.3018],[0.24,0.2761]],"b":0.796,"s":"Refreshing"},
-      "Blue Planet":{"c":[[0.1672,0.593],[0.1915,0.3638],[0.1624,0.4067],[0.1566,0.1795],[0.3314,0.5391]],"b":0.541,"s":"Lush"},
-      "Blue lagoon":{"c":[[0.1623,0.3254],[0.464,0.3618],[0.24,0.3475],[0.304,0.3777],[0.3962,0.4341]],"b":0.502,"s":"Dreamy"},
-      "Bright":{"c":[[0.4596,0.4105]],"b":0.996,"s":"Defaults"},
-      "Cancun":{"c":[[0.5121,0.4371],[0.6156,0.2808],[0.6696,0.3237],[0.5352,0.2797],[0.6153,0.3655]],"b":0.796,"s":"Party vibes"},
-      "Chinatown":{"c":[[0.5685,0.4007],[0.6752,0.3004],[0.5649,0.3275],[0.6545,0.295],[0.6362,0.2999]],"b":0.6,"s":"Party vibes"},
-      "Concentrate":{"c":[[0.3691,0.3719]],"b":0.996,"s":"Defaults"},
-      "Cool bright":{"c":[[0.3812,0.3794]],"b":0.996,"s":"Defaults"},
-      "Crocus":{"c":[[0.4195,0.4216],[0.3818,0.485],[0.2877,0.2519],[0.2194,0.1332],[0.4212,0.38]],"b":0.796,"s":"Refreshing"},
-      "Dimmed":{"c":[[0.4596,0.4105]],"b":0.302,"s":"Defaults"},
-      "Disturbia":{"c":[[0.3864,0.1864],[0.5305,0.261],[0.6587,0.2924],[0.2132,0.3113],[0.1616,0.3754]],"b":0.627,"s":"Futuristic"},
-      "Dreamy dusk":{"c":[[0.5189,0.3924],[0.5493,0.3702],[0.4416,0.2813],[0.4996,0.293],[0.5579,0.3308]],"b":0.502,"s":"Cozy"},
-      "Emerald flutter":{"c":[[0.2099,0.344],[0.1695,0.3125],[0.319,0.3996],[0.1593,0.25],[0.1569,0.1897]],"b":0.4,"s":"Luxurious"},
-      "Emerald isle":{"c":[[0.4648,0.4254],[0.3924,0.4132],[0.2709,0.3235],[0.255,0.4176],[0.3134,0.4131]],"b":0.749,"s":"Peaceful"},
-      "Energize":{"c":[[0.3143,0.3301]],"b":0.996,"s":"Defaults"},
-      "Fairfax":{"c":[[0.6776,0.3015],[0.1935,0.2353],[0.613,0.3132],[0.1583,0.2465],[0.4818,0.321]],"b":0.62,"s":"Party vibes"},
-      "First light":{"c":[[0.1649,0.1783],[0.5373,0.4003],[0.3135,0.2404],[0.2135,0.1847],[0.4134,0.2962]],"b":0.302,"s":"Sunrise"},
-      "Forest adventure":{"c":[[0.1549,0.1144],[0.1586,0.2169],[0.4197,0.5125],[0.2015,0.6023],[0.3095,0.5913]],"b":0.796,"s":"Lush"},
-      "Frosty dawn":{"c":[[0.4675,0.3769],[0.439,0.3782],[0.4221,0.386],[0.387,0.4328],[0.4013,0.4172]],"b":0.796,"s":"Peaceful"},
-      "Galaxy":{"c":[[0.4412,0.279],[0.4845,0.2799],[0.3502,0.1943],[0.4844,0.2608],[0.5351,0.3287]],"b":0.251,"s":"Serenity"},
-      "Golden pond":{"c":[[0.5063,0.4474],[0.5584,0.4083],[0.5695,0.3999],[0.482,0.4489],[0.496,0.4424]],"b":0.647,"s":"Cozy"},
-      "Hal":{"c":[[0.5953,0.3092],[0.1589,0.2701],[0.2135,0.2508],[0.4846,0.4442],[0.5641,0.3328]],"b":0.757,"s":"Futuristic"},
-      "Hazy days":{"c":[[0.4228,0.4112],[0.4832,0.4251],[0.4451,0.4199],[0.4981,0.4249],[0.4625,0.4217]],"b":0.867,"s":"Pure"},
-      "Honolulu":{"c":[[0.6364,0.2963],[0.5753,0.3275],[0.5636,0.3912],[0.4759,0.4283],[0.5725,0.3601]],"b":0.392,"s":"Cozy"},
-      "Horizon":{"c":[[0.1731,0.1978],[0.5182,0.4136],[0.2779,0.2188],[0.1811,0.1979],[0.5247,0.3877]],"b":0.502,"s":"Sunrise"},
-      "Ibiza":{"c":[[0.5974,0.36],[0.5286,0.4068],[0.5714,0.3806],[0.4376,0.4577],[0.4787,0.4495]],"b":0.49,"s":"Party vibes"},
-      "Lake Placid":{"c":[[0.4216,0.3347],[0.5135,0.348],[0.4656,0.3479],[0.2444,0.253],[0.194,0.1927]],"b":0.302,"s":"Dreamy"},
-      "Lake mist":{"c":[[0.248,0.2567],[0.3835,0.3261],[0.4237,0.3449],[0.4082,0.3661],[0.2263,0.2095]],"b":0.647,"s":"Peaceful"},
-      "Lily":{"c":[[0.5793,0.392],[0.5099,0.2918],[0.5705,0.272],[0.4703,0.3501],[0.5407,0.4008]],"b":0.796,"s":"Lush"},
-      "Magneto":{"c":[[0.4215,0.4895],[0.1593,0.1341],[0.516,0.4401],[0.1575,0.2128],[0.171,0.3389]],"b":0.878,"s":"Futuristic"},
-      "Majestic morning":{"c":[[0.3979,0.413],[0.5471,0.3588],[0.4741,0.43],[0.4659,0.3561],[0.1879,0.0644]],"b":0.569,"s":"Dreamy"},
-      "Malibu pink":{"c":[[0.5573, 0.3226],[0.3678, 0.1839],[0.1561, 0.1606],[0.4548, 0.2433],[0.154, 0.0799]],"b":0.81,"s":"Special"},
-      "Memento":{"c":[[0.1554,0.0996],[0.1729,0.146],[0.4964,0.4542],[0.1824,0.0807],[0.1671,0.0853]],"b":0.4,"s":"Luxurious"},
-      "Meriete":{"c":[[0.4636,0.4138],[0.1685,0.055],[0.2943,0.1842],[0.1547,0.1072],[0.2092,0.1108]],"b":0.796,"s":"Lush"},
-      "Miami":{"c":[[0.3678,0.1839],[0.154,0.0799],[0.5573,0.3226],[0.1561,0.1606],[0.4548,0.2433]],"b":0.796,"s":"Party vibes"},
-      "Midsummer sun":{"c":[[0.4134,0.4353],[0.4351,0.4367],[0.5247,0.4185],[0.4532,0.4353],[0.4849,0.4339]],"b":0.984,"s":"Pure"},
-      "Midwinter":{"c":[[0.2636,0.2755],[0.2221,0.2196],[0.2636,0.2508],[0.2377,0.2547],[0.2091,0.1898]],"b":0.886,"s":"Pure"},
-      "Misty ridge":{"c":[[0.3441,0.3135],[0.4125,0.3328],[0.3793,0.3219],[0.3648,0.3209],[0.3955,0.3272]],"b":0.796,"s":"Pure"},
-      "Moonlight":{"c":[[0.2108,0.2047],[0.1532,0.0476],[0.3557,0.3352],[0.1725,0.1532],[0.1547,0.1074]],"b":0.204,"s":"Serenity"},
-      "Motown":{"c":[[0.1572,0.202],[0.1545,0.0715],[0.1532,0.0476],[0.1598,0.3036],[0.1561,0.1586]],"b":0.529,"s":"Party vibes"},
-      "Mountain breeze":{"c":[[0.2361,0.2152],[0.2557,0.2325],[0.4271,0.4073],[0.2238,0.2028],[0.3836,0.3413]],"b":0.6,"s":"Peaceful"},
-      "Narcissa":{"c":[[0.5916,0.3833],[0.485,0.4543],[0.5475,0.4151],[0.4451,0.4556],[0.4759,0.4481]],"b":0.898,"s":"Refreshing"},
-      "Nebula":{"c":[[0.3161,0.2306],[0.2712,0.1723],[0.1911,0.0673],[0.232,0.2056],[0.3743,0.2727]],"b":0.243,"s":"Serenity"},
-      "Nightlight":{"c":[[0.561,0.4042]],"b":0.004,"s":"Defaults"},
-      "Ocean dawn":{"c":[[0.4143,0.3548],[0.3688,0.3106],[0.2847,0.2449],[0.4299,0.3951],[0.4416,0.3743]],"b":0.839,"s":"Peaceful"},
-      "Orange fields":{"c":[[0.4724,0.4728],[0.5701,0.3995],[0.3547,0.5613],[0.5628,0.3479],[0.5013,0.4511]],"b":0.796,"s":"Lush"},
-      "Osaka":{"c":[[0.6222,0.3604],[0.5532,0.2547],[0.513,0.4237],[0.5935,0.308],[0.4519,0.2677]],"b":0.361,"s":"Party vibes"},
-      "Painted sky":{"c":[[0.391,0.251],[0.2214,0.1211],[0.4707,0.3508],[0.6206,0.3615],[0.3106,0.1839]],"b":0.796,"s":"Lush"},
-      "Palm Beach":{"c":[[0.5691,0.3512],[0.4824,0.3325],[0.3888,0.2997],[0.2576,0.3185],[0.2007,0.3418]],"b":0.38,"s":"Dreamy"},
-      "Pensive":{"c":[[0.5561,0.3443],[0.3664,0.2621],[0.5413,0.3873],[0.2329,0.1662],[0.4918,0.3272]],"b":0.561,"s":"Dreamy"},
-      "Precious":{"c":[[0.3951,0.3606],[0.3493,0.209],[0.3904,0.4336],[0.3426,0.242],[0.4384,0.3976]],"b":0.796,"s":"Refreshing"},
-      "Read":{"c":[[0.445,0.4067]],"b":0.996,"s":"Defaults"},
-      "Relax":{"c":[[0.5019,0.4152]],"b":0.561,"s":"Defaults"},
-      "Resplendent":{"c":[[0.4105,0.2205],[0.5124,0.3609],[0.2392,0.125],[0.4661,0.2915],[0.3223,0.1916]],"b":0.302,"s":"Luxurious"},
-      "Rest":{"c":[[0.561,0.4042]],"b":0.353,"s":"Defaults"},
-      "Rio":{"c":[[0.4692,0.4536],[0.5353,0.2909],[0.5527,0.2686],[0.2588,0.1266],[0.5473,0.3735]],"b":0.796,"s":"Party vibes"},
-      "Rolling hills":{"c":[[0.5787,0.3787],[0.5242,0.4027],[0.5529,0.3942],[0.4796,0.3959],[0.5015,0.401]],"b":0.451,"s":"Cozy"},
-      "Ruby glow":{"c":[[0.3826,0.3117],[0.5321,0.2758],[0.4557,0.2951],[0.4189,0.3031],[0.4903,0.2839]],"b":0.4,"s":"Cozy"},
-      "Savanna sunset":{"c":[[0.4162,0.4341],[0.5862,0.3575],[0.644,0.3348],[0.5246,0.3864],[0.4801,0.4309]],"b":0.58,"s":"Cozy"},
-      "Scarlet dream":{"c":[[0.4059,0.2562],[0.5652,0.3006],[0.5177,0.269],[0.5829,0.3333],[0.4585,0.2636]],"b":0.302,"s":"Luxurious"},
-      "Soho":{"c":[[0.5019,0.2751],[0.5865,0.2575],[0.1916,0.3954],[0.5115,0.3625],[0.2219,0.0825]],"b":0.62,"s":"Futuristic"},
-      "Spring blossom":{"c":[[0.3517,0.3154],[0.3744,0.2692],[0.359,0.2925],[0.514,0.3338],[0.4435,0.2537]],"b":0.6,"s":"Peaceful"},
-      "Spring lake":{"c":[[0.3348,0.3611],[0.3351,0.425],[0.339,0.4042],[0.3308,0.3798],[0.3414,0.3868]],"b":0.945,"s":"Pure"},
-      "Starlight":{"c":[[0.4387,0.3739],[0.3133,0.2061],[0.2213,0.1346],[0.3787,0.2792],[0.4228,0.3349]],"b":0.243,"s":"Serenity"},
-      "Still waters":{"c":[[0.4247,0.3033],[0.3115,0.2261],[0.2481,0.1608],[0.3409,0.2472],[0.3984,0.3182]],"b":0.678,"s":"Dreamy"},
-      "Sunday morning":{"c":[[0.3754,0.3602],[0.4258,0.4104],[0.4313,0.4348],[0.3659,0.4529],[0.403,0.382]],"b":0.678,"s":"Peaceful"},
-      "Sundown":{"c":[[0.2459,0.2693],[0.555,0.3606],[0.192,0.1686],[0.5948,0.3442],[0.4848,0.3887]],"b":0.502,"s":"Dreamy"},
-      "Sunflare":{"c":[[0.2031,0.2342],[0.481,0.4134],[0.4448,0.3857],[0.2556,0.2539],[0.4967,0.414]],"b":0.796,"s":"Sunrise"},
-      "Tokyo":{"c":[[0.5614,0.406],[0.1753,0.0585],[0.1562,0.1626],[0.5894,0.2589],[0.2676,0.103]],"b":0.471,"s":"Party vibes"},
-      "Tropical twilight":{"c":[[0.363,0.2716],[0.4731,0.3723],[0.5813,0.3636],[0.2412,0.1171],[0.3044,0.1803]],"b":0.439,"s":"Cozy"},
-      "Tyrell":{"c":[[0.2267,0.0832],[0.37,0.2328],[0.3977,0.1832],[0.1586,0.2579],[0.257,0.1754]],"b":0.502,"s":"Futuristic"},
-      "Valley dawn":{"c":[[0.1862,0.216],[0.494,0.4139],[0.3926,0.3226],[0.2195,0.2166],[0.4996,0.4026]],"b":0.698,"s":"Sunrise"},
-      "Vapor wave":{"c":[[0.1783,0.1212],[0.2299,0.0862],[0.474,0.4378],[0.4039,0.1914],[0.5403,0.4219]],"b":0.776,"s":"Futuristic"},
-      "Warm embrace":{"c":[[0.5734,0.327],[0.5496,0.3804],[0.5826,0.3426],[0.5687,0.3667],[0.5258,0.3976]],"b":0.4,"s":"Cozy"},
-      "Winter beauty":{"c":[[0.4216,0.4437],[0.3281,0.4921],[0.1784,0.3104],[0.2137,0.49],[0.5353,0.4074]],"b":0.796,"s":"Lush"},
-      "Winter mountain":{"c":[[0.293,0.3236],[0.2484,0.3089],[0.252,0.3108],[0.273,0.3175],[0.2376,0.3042]],"b":0.878,"s":"Pure"},
-      "Random":{"colors":[
+    {{
+      {"c":[[0.1969,0.0688],[0.5938,0.261],[0.5535,0.4119],[0.1664,0.5595],[0.6915,0.3083]],"b":0.451,"s":"Halloween","n":"Hocus pocus"},
+      {"c":[[0.445,0.4067]],"b":0.996,"s":"Defaults","n":"Read"},
+      {"c":[[0.4247,0.3033],[0.3115,0.2261],[0.2481,0.1608],[0.3409,0.2472],[0.3984,0.3182]],"b":0.678,"s":"Dreamy","n":"Still waters"},
+      {"c":[[0.6898,0.3075],[0.6236,0.3551],[0.568,0.389],[0.1972,0.0689],[0.2446,0.1235]],"b":0.447,"s":"Halloween","n":"Toil and trouble"},
+      {"c":[[0.5793,0.392],[0.5099,0.2918],[0.5705,0.272],[0.4703,0.3501],[0.5407,0.4008]],"b":0.796,"s":"Lush","n":"Lily"},
+      {"c":[[0.1918,0.2296],[0.512,0.318],[0.2829,0.1872],[0.3156,0.4254],[0.4791,0.3551]],"b":0.502,"s":"Romantic","n":"Promise"},
+      {"c":[[0.1646,0.0531],[0.2773,0.1868],[0.2207,0.083],[0.1827,0.0708],[0.2267,0.1354]],"b":0.502,"s":"Halloween","n":"Pandemonium"},
+      {"c":[[0.3691,0.3719]],"b":0.996,"s":"Defaults","n":"Concentrate"},
+      {"c":[[0.5446,0.4265],[0.222,0.5446],[0.1993,0.0703],[0.2085,0.1209],[0.3061,0.568]],"b":0.498,"s":"Halloween","n":"Spellbound"},
+      {"c":[[0.1645,0.1023],[0.4476,0.4542],[0.4543,0.2814],[0.2285,0.4292],[0.1711,0.2357]],"b":0.753,"s":"Race Day","n":"Singapore"},
+      {"c":[[0.3143,0.3301]],"b":0.996,"s":"Defaults","n":"Energize"},
+      {"c":[[0.3864,0.1864],[0.5305,0.261],[0.6587,0.2924],[0.2132,0.3113],[0.1616,0.3754]],"b":0.627,"s":"Futuristic","n":"Disturbia"},
+      {"c":[[0.457,0.4406],[0.4636,0.4073],[0.4436,0.4271],[0.4714,0.3964],[0.4427,0.4017]],"b":0.796,"s":"Pure","n":"Autumn gold"},
+      {"c":[[0.1532,0.0479],[0.1569,0.1899],[0.1543,0.0922],[0.589,0.3719],[0.5311,0.4235]],"b":0.451,"s":"Romantic","n":"City of love"},
+      {"c":[[0.1549,0.1144],[0.1586,0.2169],[0.4197,0.5125],[0.2015,0.6023],[0.3095,0.5913]],"b":0.796,"s":"Lush","n":"Forest adventure"},
+      {"c":[[0.6364,0.2963],[0.5753,0.3275],[0.5636,0.3912],[0.4759,0.4283],[0.5725,0.3601]],"b":0.392,"s":"Cozy","n":"Honolulu"},
+      {"c":[[0.2361,0.2152],[0.2557,0.2325],[0.4271,0.4073],[0.2238,0.2028],[0.3836,0.3413]],"b":0.6,"s":"Peaceful","n":"Mountain breeze"},
+      {"c":[[0.2977,0.2444],[0.25,0.1781],[0.2278,0.1424],[0.2752,0.2042],[0.2883,0.2235]],"b":0.937,"s":"Pure","n":"Amethyst valley"},
+      {"c":[[0.5259,0.348],[0.5893,0.3531],[0.6615,0.3268],[0.1532,0.0476],[0.1689,0.1281]],"b":0.451,"s":"Halloween","n":"Witching hour"},
+      {"c":[[0.3517,0.3154],[0.3744,0.2692],[0.359,0.2925],[0.514,0.3338],[0.4435,0.2537]],"b":0.6,"s":"Peaceful","n":"Spring blossom"},
+      {"c":[[0.45,0.198],[0.5856,0.3736],[0.4007,0.2296],[0.4469,0.273],[0.5565,0.3924]],"b":0.502,"s":"Romantic","n":"Glitz and glam"},
+      {"c":[[0.3754,0.3602],[0.4258,0.4104],[0.4313,0.4348],[0.3659,0.4529],[0.403,0.382]],"b":0.678,"s":"Peaceful","n":"Sunday morning"},
+      {"c":[[0.4228,0.4112],[0.4832,0.4251],[0.4451,0.4199],[0.4981,0.4249],[0.4625,0.4217]],"b":0.867,"s":"Pure","n":"Hazy days"},
+      {"c":[[0.1649,0.1783],[0.5373,0.4003],[0.3135,0.2404],[0.2135,0.1847],[0.4134,0.2962]],"b":0.302,"s":"Sunrise","n":"First light"},
+      {"c":[[0.2031,0.2342],[0.481,0.4134],[0.4448,0.3857],[0.2556,0.2539],[0.4967,0.414]],"b":0.796,"s":"Sunrise","n":"Sunflare"},
+      {"c":[[0.1593,0.2346],[0.445,0.448],[0.5393,0.4205],[0.1553,0.0903],[0.1995,0.4599]],"b":0.4,"s":"Winter holidays","n":"Nutcracker"},
+      {"c":[[0.4134,0.4353],[0.4351,0.4367],[0.5247,0.4185],[0.4532,0.4353],[0.4849,0.4339]],"b":0.984,"s":"Pure","n":"Midsummer sun"},
+      {"c":[[0.5019,0.2751],[0.5865,0.2575],[0.1916,0.3954],[0.5115,0.3625],[0.2219,0.0825]],"b":0.62,"s":"Futuristic","n":"Soho"},
+      {"c":[[0.1672,0.593],[0.1915,0.3638],[0.1624,0.4067],[0.1566,0.1795],[0.3314,0.5391]],"b":0.541,"s":"Lush","n":"Blue planet"},
+      {"c":[[0.1783,0.1212],[0.2299,0.0862],[0.474,0.4378],[0.4039,0.1914],[0.5403,0.4219]],"b":0.776,"s":"Futuristic","n":"Vapor wave"},
+      {"c":[[0.3161,0.2306],[0.2712,0.1723],[0.1911,0.0673],[0.232,0.2056],[0.3743,0.2727]],"b":0.243,"s":"Serenity","n":"Nebula"},
+      {"c":[[0.4934,0.3675],[0.5717,0.3983],[0.5341,0.3975],[0.6178,0.3413],[0.5946,0.3811]],"b":0.796,"s":"Lush","n":"Amber bloom"},
+      {"c":[[0.3826,0.3117],[0.5321,0.2758],[0.4557,0.2951],[0.4189,0.3031],[0.4903,0.2839]],"b":0.4,"s":"Cozy","n":"Ruby glow"},
+      {"c":[[0.391,0.251],[0.2214,0.1211],[0.4707,0.3508],[0.6206,0.3615],[0.3106,0.1839]],"b":0.796,"s":"Lush","n":"Painted sky"},
+      {"c":[[0.4777,0.3856],[0.4418,0.3496],[0.5068,0.3702],[0.5321,0.363],[0.4658,0.3667]],"b":0.38,"s":"Winter holidays","n":"Silent night"},
+      {"c":[[0.5787,0.3787],[0.5242,0.4027],[0.5529,0.3942],[0.4796,0.3959],[0.5015,0.401]],"b":0.451,"s":"Cozy","n":"Rolling hills"},
+      {"c":[[0.5396,0.4117],[0.5108,0.4192],[0.4833,0.4186],[0.4601,0.415],[0.4369,0.4086]],"b":0.694,"s":"Daily","n":"Storybook"},
+      {"c":[[0.3951,0.3606],[0.3493,0.209],[0.3904,0.4336],[0.3426,0.242],[0.4384,0.3976]],"b":0.796,"s":"Refreshing","n":"Precious"},
+      {"c":[[0.4059,0.2562],[0.5652,0.3006],[0.5177,0.269],[0.5829,0.3333],[0.4585,0.2636]],"b":0.302,"s":"Luxurious","n":"Scarlet dream"},
+      {"c":[[0.6222,0.3604],[0.5532,0.2547],[0.513,0.4237],[0.5935,0.308],[0.4519,0.2677]],"b":0.361,"s":"Party vibes","n":"Osaka"},
+      {"c":[[0.1623,0.3254],[0.464,0.3618],[0.24,0.3475],[0.304,0.3777],[0.3962,0.4341]],"b":0.502,"s":"Dreamy","n":"Blue lagoon"},
+      {"c":[[0.6444,0.3207],[0.5977,0.3585],[0.6203,0.325],[0.5609,0.3868],[0.5267,0.409]],"b":0.255,"s":"Daily","n":"Sleepy"},
+      {"c":[[0.1541,0.081],[0.1778,0.0604],[0.6206,0.3214],[0.1949,0.0678],[0.5967,0.3418]],"b":0.353,"s":"Winter holidays","n":"Festive fun"},
+      {"c":[[0.2267,0.0832],[0.37,0.2328],[0.3977,0.1832],[0.1586,0.2579],[0.257,0.1754]],"b":0.502,"s":"Futuristic","n":"Tyrell"},
+      {"c":[[0.1547,0.1045],[0.2044,0.164],[0.4802,0.3112],[0.1743,0.1333],[0.2789,0.2025]],"b":0.647,"s":"Dreamy","n":"Adrift"},
+      {"c":[[0.3441,0.3135],[0.4125,0.3328],[0.3793,0.3219],[0.3648,0.3209],[0.3955,0.3272]],"b":0.796,"s":"Pure","n":"Misty ridge"},
+      {"c":[[0.6488,0.2876],[0.5417,0.3551],[0.5992,0.2903],[0.5822,0.3393],[0.5079,0.3289]],"b":0.451,"s":"Romantic","n":"Ruby romance"},
+      {"c":[[0.2394,0.1596],[0.5881,0.3451],[0.2827,0.189],[0.559,0.3701],[0.5363,0.3986]],"b":0.416,"s":"Romantic","n":"Sunset allure"},
+      {"c":[[0.1623,0.4022],[0.1838,0.1204],[0.1532,0.0476],[0.549,0.3849],[0.6374,0.3447]],"b":0.396,"s":"Winter holidays","n":"Snow sparkle"},
+      {"c":[[0.5916,0.3833],[0.485,0.4543],[0.5475,0.4151],[0.4451,0.4556],[0.4759,0.4481]],"b":0.898,"s":"Refreshing","n":"Narcissa"},
+      {"c":[[0.3812,0.3794]],"b":0.996,"s":"Defaults","n":"Cool bright"},
+      {"c":[[0.3938,0.3119],[0.4332,0.3513],[0.1882,0.202],[0.1659,0.1712],[0.3373,0.2571]],"b":0.329,"s":"Winter holidays","n":"Crystalline"},
+      {"c":[[0.5734,0.327],[0.5496,0.3804],[0.5826,0.3426],[0.5687,0.3667],[0.5258,0.3976]],"b":0.4,"s":"Cozy","n":"Warm embrace"},
+      {"c":[[0.5685,0.4007],[0.6752,0.3004],[0.5649,0.3275],[0.6545,0.295],[0.6362,0.2999]],"b":0.6,"s":"Party vibes","n":"Chinatown"},
+      {"c":[[0.4925,0.4286],[0.5925,0.3248],[0.189,0.5028],[0.1559,0.1524],[0.4667,0.238]],"b":0.4,"s":"Winter holidays","n":"Jolly"},
+      {"c":[[0.5953,0.3092],[0.1589,0.2701],[0.2135,0.2508],[0.4846,0.4442],[0.5641,0.3328]],"b":0.757,"s":"Futuristic","n":"Hal"},
+      {"c":[[0.248,0.2567],[0.3835,0.3261],[0.4237,0.3449],[0.4082,0.3661],[0.2263,0.2095]],"b":0.647,"s":"Peaceful","n":"Lake mist"},
+      {"c":[[0.1572,0.202],[0.1545,0.0715],[0.1532,0.0476],[0.1598,0.3036],[0.1561,0.1586]],"b":0.529,"s":"Party vibes","n":"Motown"},
+      {"c":[[0.4215,0.4895],[0.1593,0.1341],[0.516,0.4401],[0.1575,0.2128],[0.171,0.3389]],"b":0.878,"s":"Futuristic","n":"Magneto"},
+      {"c":[[0.2242,0.0946],[0.4485,0.3245],[0.4634,0.2642],[0.3481,0.1913],[0.4195,0.445]],"b":0.643,"s":"Race Day","n":"Suzuka"},
+      {"c":[[0.2459,0.2693],[0.555,0.3606],[0.192,0.1686],[0.5948,0.3442],[0.4848,0.3887]],"b":0.502,"s":"Dreamy","n":"Sundown"},
+      {"c":[[0.4596,0.4105]],"b":0.996,"s":"Defaults","n":"Bright"},
+      {"c":[[0.6777,0.3085],[0.189,0.5037],[0.1711,0.6741],[0.5075,0.44],[0.523,0.3581]],"b":0.4,"s":"Winter holidays","n":"Under the tree"},
+      {"c":[[0.5063,0.4474],[0.5584,0.4083],[0.5695,0.3999],[0.482,0.4489],[0.496,0.4424]],"b":0.647,"s":"Cozy","n":"Golden pond"},
+      {"c":[[0.6049,0.3396],[0.1544,0.0725],[0.1768,0.0889],[0.2239,0.0883],[0.3786,0.2083]],"b":0.549,"s":"Halloween","n":"Trick or treat"},
+      {"c":[[0.4675,0.3769],[0.439,0.3782],[0.4221,0.386],[0.387,0.4328],[0.4013,0.4172]],"b":0.796,"s":"Peaceful","n":"Frosty dawn"},
+      {"c":[[0.3041,0.2368],[0.1596,0.0684],[0.3918,0.2958],[0.1803,0.1298],[0.465,0.3446]],"b":0.204,"s":"Serenity","n":"Blood moon"},
+      {"c":[[0.4596,0.4105]],"b":0.302,"s":"Defaults","n":"Dimmed"},
+      {"c":[[0.6571,0.2954],[0.5353,0.4035],[0.5939,0.379],[0.6309,0.3339],[0.3134,0.5923]],"b":0.471,"s":"Halloween","n":"Glowing grins"},
+      {"c":[[0.1868,0.3328],[0.1581,0.1508],[0.1541,0.0844],[0.2072,0.4525],[0.2359,0.3855]],"b":0.263,"s":"Serenity","n":"Arctic aurora"},
+      {"c":[[0.4692,0.4536],[0.5353,0.2909],[0.5527,0.2686],[0.2588,0.1266],[0.5473,0.3735]],"b":0.796,"s":"Party vibes","n":"Rio"},
+      {"c":[[0.2099,0.344],[0.1695,0.3125],[0.319,0.3996],[0.1593,0.25],[0.1569,0.1897]],"b":0.4,"s":"Luxurious","n":"Emerald flutter"},
+      {"c":[[0.3979,0.413],[0.5471,0.3588],[0.4741,0.43],[0.4659,0.3561],[0.1879,0.0644]],"b":0.569,"s":"Dreamy","n":"Majestic morning"},
+      {"c":[[0.5189,0.3924],[0.5493,0.3702],[0.4416,0.2813],[0.4996,0.293],[0.5579,0.3308]],"b":0.502,"s":"Cozy","n":"Dreamy dusk"},
+      {"c":[[0.4387,0.3739],[0.3133,0.2061],[0.2213,0.1346],[0.3787,0.2792],[0.4228,0.3349]],"b":0.243,"s":"Serenity","n":"Starlight"},
+      {"c":[[0.4216,0.3347],[0.5135,0.348],[0.4656,0.3479],[0.2444,0.253],[0.194,0.1927]],"b":0.302,"s":"Dreamy","n":"Lake Placid"},
+      {"c":[[0.3678,0.1839],[0.154,0.0799],[0.5573,0.3226],[0.1561,0.1606],[0.4548,0.2433]],"b":0.796,"s":"Party vibes","n":"Miami"},
+      {"c":[[0.6813,0.3034],[0.4812,0.4456],[0.5717,0.3975],[0.5057,0.4345],[0.6233,0.3222]],"b":0.459,"s":"Winter holidays","n":"Golden star"},
+      {"c":[[0.4746,0.2932],[0.5347,0.3333],[0.5285,0.3165],[0.5353,0.3501],[0.5508,0.3704]],"b":0.6,"s":"Romantic","n":"Smitten"},
+      {"c":[[0.4412,0.279],[0.4845,0.2799],[0.3502,0.1943],[0.4844,0.2608],[0.5351,0.3287]],"b":0.251,"s":"Serenity","n":"Galaxy"},
+      {"c":[[0.188,0.4536],[0.1859,0.2404],[0.2996,0.4535],[0.4154,0.4646],[0.4421,0.4811]],"b":0.753,"s":"Race Day","n":"São Paulo"},
+      {"c":[[0.2108,0.2047],[0.1532,0.0476],[0.3557,0.3352],[0.1725,0.1532],[0.1547,0.1074]],"b":0.204,"s":"Serenity","n":"Moonlight"},
+      {"c":[[0.6776,0.3015],[0.1935,0.2353],[0.613,0.3132],[0.1583,0.2465],[0.4818,0.321]],"b":0.62,"s":"Party vibes","n":"Fairfax"},
+      {"c":[[0.5561,0.3443],[0.3664,0.2621],[0.5413,0.3873],[0.2329,0.1662],[0.4918,0.3272]],"b":0.561,"s":"Dreamy","n":"Pensive"},
+      {"c":[[0.1708,0.2751],[0.2245,0.2928],[0.5334,0.4045],[0.4785,0.3995],[0.5896,0.3706]],"b":0.592,"s":"Race Day","n":"Bahrain"},
+      {"c":[[0.561,0.4042]],"b":0.004,"s":"Defaults","n":"Nightlight"},
+      {"c":[[0.1862,0.216],[0.494,0.4139],[0.3926,0.3226],[0.2195,0.2166],[0.4996,0.4026]],"b":0.698,"s":"Sunrise","n":"Valley dawn"},
+      {"c":[[0.4636,0.4138],[0.1685,0.055],[0.2943,0.1842],[0.1547,0.1072],[0.2092,0.1108]],"b":0.796,"s":"Lush","n":"Meriete"},
+      {"c":[[0.1731,0.1978],[0.5182,0.4136],[0.2779,0.2188],[0.1811,0.1979],[0.5247,0.3877]],"b":0.502,"s":"Sunrise","n":"Horizon"},
+      {"c":[[0.5949,0.2738],[0.244,0.1708],[0.522,0.3471],[0.2209,0.2477],[0.5236,0.386]],"b":0.596,"s":"Race Day","n":"Silverstone"},
+      {"c":[[0.1554,0.0996],[0.1729,0.146],[0.4964,0.4542],[0.1824,0.0807],[0.1671,0.0853]],"b":0.4,"s":"Luxurious","n":"Memento"},
+      {"c":[[0.5121,0.4371],[0.6156,0.2808],[0.6696,0.3237],[0.5352,0.2797],[0.6153,0.3655]],"b":0.796,"s":"Party vibes","n":"Cancun"},
+      {"c":[[0.4105,0.2205],[0.5124,0.3609],[0.2392,0.125],[0.4661,0.2915],[0.3223,0.1916]],"b":0.302,"s":"Luxurious","n":"Resplendent"},
+      {"c":[[0.293,0.3236],[0.2484,0.3089],[0.252,0.3108],[0.273,0.3175],[0.2376,0.3042]],"b":0.878,"s":"Pure","n":"Winter mountain"},
+      {"c":[[0.4195,0.4216],[0.3818,0.485],[0.2877,0.2519],[0.2194,0.1332],[0.4212,0.38]],"b":0.796,"s":"Refreshing","n":"Crocus"},
+      {"c":[[0.4949,0.3565],[0.4366,0.3393],[0.4914,0.3119],[0.4435,0.2571],[0.3613,0.2005]],"b":0.38,"s":"Winter holidays","n":"Rosy sparkle"},
+      {"c":[[0.6584,0.3021],[0.6182,0.352],[0.645,0.3288],[0.5819,0.3813],[0.5375,0.404]],"b":0.067,"s":"Daily","n":"Nighttime"},
+      {"c":[[0.1621,0.3061],[0.5573,0.3409],[0.5335,0.3789],[0.2007,0.2178],[0.5371,0.2735]],"b":0.753,"s":"Race Day","n":"Miami"},
+      {"c":[[0.5119,0.4249],[0.3972,0.4025],[0.4419,0.4164],[0.2674,0.3018],[0.24,0.2761]],"b":0.796,"s":"Refreshing","n":"Blossom"},
+      {"c":[[0.4271,0.4052],[0.4043,0.3858],[0.385,0.3743],[0.3671,0.3629],[0.3472,0.348]],"b":0.996,"s":"Daily","n":"Arise"},
+      {"c":[[0.2258,0.3244],[0.5217,0.3592],[0.1597,0.2673],[0.1568,0.1681],[0.4281,0.3412]],"b":0.4,"s":"Halloween","n":"Phantom"},
+      {"c":[[0.4724,0.4728],[0.5701,0.3995],[0.3547,0.5613],[0.5628,0.3479],[0.5013,0.4511]],"b":0.796,"s":"Lush","n":"Orange fields"},
+      {"c":[[0.5614,0.406],[0.1753,0.0585],[0.1562,0.1626],[0.5894,0.2589],[0.2676,0.103]],"b":0.471,"s":"Party vibes","n":"Tokyo"},
+      {"c":[[0.5208,0.4183],[0.495,0.4193],[0.4728,0.4174],[0.4481,0.4124],[0.4238,0.4037]],"b":0.996,"s":"Daily","n":"Shine"},
+      {"c":[[0.1587,0.1368],[0.3537,0.2546],[0.1914,0.1543],[0.1652,0.1455],[0.2726,0.2045]],"b":0.204,"s":"Sunrise","n":"Beginnings"},
+      {"c":[[0.561,0.4042]],"b":0.353,"s":"Defaults","n":"Rest"},
+      {"c":[[0.4143,0.3548],[0.3688,0.3106],[0.2847,0.2449],[0.4299,0.3951],[0.4416,0.3743]],"b":0.839,"s":"Peaceful","n":"Ocean dawn"},
+      {"c":[[0.3188,0.1278],[0.6495,0.288],[0.5702,0.3307],[0.1813,0.1037],[0.4515,0.4742]],"b":0.302,"s":"Winter holidays","n":"Color burst"},
+      {"c":[[0.5019,0.4152]],"b":0.561,"s":"Defaults","n":"Relax"},
+      {"c":[[0.5691,0.3512],[0.4824,0.3325],[0.3888,0.2997],[0.2576,0.3185],[0.2007,0.3418]],"b":0.38,"s":"Dreamy","n":"Palm Beach"},
+      {"c":[[0.4162,0.4341],[0.5862,0.3575],[0.644,0.3348],[0.5246,0.3864],[0.4801,0.4309]],"b":0.58,"s":"Cozy","n":"Savanna sunset"},
+      {"c":[[0.5974,0.36],[0.5286,0.4068],[0.5714,0.3806],[0.4376,0.4577],[0.4787,0.4495]],"b":0.49,"s":"Party vibes","n":"Ibiza"},
+      {"c":[[0.4216,0.4437],[0.3281,0.4921],[0.1784,0.3104],[0.2137,0.49],[0.5353,0.4074]],"b":0.796,"s":"Lush","n":"Winter beauty"},
+      {"c":[[0.5528,0.3806],[0.5787,0.393],[0.5149,0.4116],[0.5014,0.4153],[0.5202,0.4369]],"b":0.396,"s":"Romantic","n":"Lovebirds"},
+      {"c":[[0.3348,0.3611],[0.3351,0.425],[0.339,0.4042],[0.3308,0.3798],[0.3414,0.3868]],"b":0.945,"s":"Pure","n":"Spring lake"},
+      {"c":[[0.5796,0.3787],[0.5114,0.4192],[0.5594,0.4008],[0.5369,0.4148],[0.4849,0.4189]],"b":0.447,"s":"Daily","n":"Unwind"},
+      {"c":[[0.1621,0.1817],[0.5462,0.3602],[0.389,0.4329],[0.2237,0.2599],[0.5087,0.4226]],"b":0.843,"s":"Race Day","n":"Zandvoort"},
+      {"c":[[0.4648,0.4254],[0.3924,0.4132],[0.2709,0.3235],[0.255,0.4176],[0.3134,0.4131]],"b":0.749,"s":"Peaceful","n":"Emerald isle"},
+      {"c":[[0.2636,0.2755],[0.2221,0.2196],[0.2636,0.2508],[0.2377,0.2547],[0.2091,0.1898]],"b":0.886,"s":"Pure","n":"Midwinter"},
+      {"c":[[0.363,0.2716],[0.4731,0.3723],[0.5813,0.3636],[0.2412,0.1171],[0.3044,0.1803]],"b":0.439,"s":"Cozy","n":"Tropical twilight"},
+      {"colors":[
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
-      ]},
-      "Colorloop":{"colors":[]}} 
-    %}
-    {{ scenes }}
+      ],"s":"Special","n":"Random"},
+      {"colors":[],"s":"Special","n":"Colorloop"}
+    }}
   scene_name: |-
     {% if not scene and default_scene %}
       {% set scene = default_scene %}
     {% endif %}
     {% if ":" in scene %}
-      {{ scene.split(":")[1] }}
+      {% set split_scene = scene.split(":") %}
+      {{scenes | selectattr('n', 'eq', split_scene[1] | trim) | selectattr('s', 'eq', split_scene[0]) | first | default('') }}
     {% else %}
-      {{ scene }}
+      {{scenes | selectattr('n', 'eq', scene) | first | default('') }}
     {% endif %}
   brightness_value: |-
     {% if use_scene_brightness %}
-      {{ (scenes[scene_name].b*100)|round(0, 'ceil') }}
+      {{ (scene_name.b*100)|round(0, 'ceil') }}
     {% elif brightness %}
       {{ brightness }}
     {% else %}
@@ -679,7 +790,7 @@ variables:
     {% for a in ns.areas %}
       {% set ns.l = ns.l + area_entities(a)|select('match', 'light.')|list %}
     {% endfor %}
-    
+
     {% if target.entity_id is defined %}
       {% if target.entity_id is iterable and not target.entity_id is string %}
         {% set ns.l = ns.l + (target.entity_id|list) %}
@@ -687,7 +798,7 @@ variables:
         {% set ns.l = ns.l + [target.entity_id] %}
       {% endif %}
     {% endif %}
-    
+
      ## process devices
     {% if target.device_id is defined %}
       {% if target.device_id is iterable and not target.device_id is string %}
@@ -698,8 +809,8 @@ variables:
         {% set ns.l = ns.l + device_entities(target.device_id)|select('match', 'light.')|list %}
       {% endif %}
     {% endif %}
-    
-    
+
+
     ## process labels
     {% if target.label_id is defined %}
       {% if target.label_id is iterable and not target.label_id is string %}
@@ -710,11 +821,11 @@ variables:
         {% set ns.l = ns.l + label_entities(target.label_id)|select('match', 'light.')|list %}
       {% endif %}
     {% endif %}
-    
+
     {% if skipgroups|default(true) %}
     {% set ns.l = expand(ns.l) | rejectattr('attributes.entity_id', 'defined') | map(attribute = "entity_id") | list %}
     {% endif %}
-    
+
     {% if onlyonlights|default(false) %}
     {% set ns.l = ns.l | select('is_state', 'on') %}
     {% endif %}
@@ -734,7 +845,7 @@ variables:
     {% set ns.lights_temporary = [] %}
     {%- for ll in ns.l %}
       {%- set colormodes = state_attr(ll, "supported_color_modes") -%}
-      {%- if "xy" in colormodes or "rgb" in colormodes or (include_mode_color_temp and "color_temp" in colormodes) or (not include_mode_color_temp and scene_name in ["Bright", "Concentrate", "Cool bright", "Dimmed", "Energize", "Nightlight", "Read", "Relax", "Rest"]) -%}
+      {%- if "xy" in colormodes or "rgb" in colormodes or (include_mode_color_temp and "color_temp" in colormodes) or (not include_mode_color_temp and scene_name.n in ["Bright", "Concentrate", "Cool bright", "Dimmed", "Energize", "Nightlight", "Read", "Relax", "Rest"]) -%}
         {% set ns.lights_temporary = ns.lights_temporary + [ll] %}
       {%- endif -%}
     {%- endfor -%}
@@ -751,7 +862,7 @@ sequence:
         sequence:
           - service: input_text.set_value
             data:
-              value: "{{ scene_name }}"
+              value: "{{ scene_name.n }}"
             target:
               entity_id: !input report_entity
   - if: "{{ debug }}"
@@ -787,7 +898,7 @@ sequence:
         - variables:
             colors: |-
               # shuffle color order
-              {% set ns = namespace(x = scenes[scene_name].c) %}
+              {% set ns = namespace(x = scene_name.c) %}
               {% for i in range(ns.x | length - 1, 0, -1) %}
                 {% set j = range(0, i + 1) | random %}
                 {% if j != i %}
@@ -801,7 +912,7 @@ sequence:
             sequence:
               - variables:
                   datadict: |-
-                    {% if scene_name == "Colorloop" %}
+                    {% if scene_name.n == "Colorloop" %}
                       {% set oldcol = state_attr(repeat.item, "hs_color") %}
                       {% if first or (oldcol == None) %}
                         {% set dd = {"hs_color": [ range(hue_min|default(0),hue_max|default(360))|random, range(sat_min|default(99),sat_max|default(101))|random] } %}
@@ -811,19 +922,19 @@ sequence:
                           "transition": ( repeat_delay.hours*60*60 + repeat_delay.minutes*60 + repeat_delay.seconds )
                         } %}
                       {% endif %}
-                    {% elif scene_name == "Random" %}
+                    {% elif scene_name.n == "Random" %}
                       {% set xy = colors[repeat.index % colors|length] %}
                       {% set dd = {"hs_color": [xy|first, xy|last] } %}
                     {% else %}
                       {% set xy = colors[repeat.index % colors|length] %}
                       {% set dd = {"xy_color": [xy|first, xy|last] } %}
                     {% endif %}
-                    
+
                     {% if brightness_value != "x" and first %}
                       {% set bd = {"brightness_pct": brightness_value } %}
                       {% set dd = dict(dd, **bd) %}
                     {% endif %}
-                    
+
                     {% if transition and scene != "Colorloop" %}
                       {% set bd = {"transition": transition } %}
                       {% set dd = dict(dd, **bd) %}
