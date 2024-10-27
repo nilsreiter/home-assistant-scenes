@@ -38,6 +38,11 @@ target:
 
 ## Changelog 
 
+### 3.2
+    
+- Newer scene categories added (Daily, Halloween, Race day, Romantic, Winter holidays). Thanks @Glennmen!
+- Updated format for storing scene information.
+
 ### 3.1.1
 
 - Fixed a bug that sometimes set small brightness values to zero because of rounding. Thanks @Glennmen!
