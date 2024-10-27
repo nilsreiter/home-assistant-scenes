@@ -42,6 +42,11 @@ blueprint:
 
     ## Changelog 
 
+    ### 3.2
+    
+    - Newer scene categories added (Daily, Halloween, Race day, Romantic, Winter holidays). Thanks @Glennmen!
+    - Updated format for storing scene information.
+
     ### 3.1.1
 
     - Fixed a bug that sometimes set small brightness values to zero because of rounding. Thanks @Glennmen!
@@ -737,14 +742,14 @@ variables:
       {"c":[[0.4648,0.4254],[0.3924,0.4132],[0.2709,0.3235],[0.255,0.4176],[0.3134,0.4131]],"b":0.749,"s":"Peaceful","n":"Emerald isle"},
       {"c":[[0.2636,0.2755],[0.2221,0.2196],[0.2636,0.2508],[0.2377,0.2547],[0.2091,0.1898]],"b":0.886,"s":"Pure","n":"Midwinter"},
       {"c":[[0.363,0.2716],[0.4731,0.3723],[0.5813,0.3636],[0.2412,0.1171],[0.3044,0.1803]],"b":0.439,"s":"Cozy","n":"Tropical twilight"},
-      {"colors":[
+      {"c":[
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
-      ],"s":"Special","n":"Random"},
-      {"colors":[],"s":"Special","n":"Colorloop"}
+      ],"b": 0.9,"s":"Special","n":"Random"},
+      {"c":[],"b": 0.9,"s":"Special","n":"Colorloop"}
     }}
   scene_name: |-
     {% if not scene and default_scene %}
