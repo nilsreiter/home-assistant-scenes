@@ -38,6 +38,35 @@ target:
 
 ## Changelog 
 
+### 3.3
+
+- When launching the script, it is now possible to specify your own colors. If the script is called with specified colors, the scene changes to "Special: My scene". There is no limit on the number of colors. It is probably the best use to define a button to call the script with specific colors. 
+  The YAML code for such a call looks like this:
+    ```
+    tap_action:
+      action: perform-action
+      perform_action: ENTITY_ID_OF_THE_SCRIPT
+      target: {}
+      data:
+        scene: "Special: My scene"
+        repeat_delay:
+          hours: 0
+          minutes: 0
+          seconds: 30
+        onlyonlights: false
+        use_scene_brightness: false
+        brightness: 100
+        my_scene:
+          c:
+            - - 0.2361
+              - 0.2152
+            - - 0.2557
+              - 0.2325
+          b: 0.6
+    ```
+  Note: This may not be the final form of the feature. If possible, it would be cool to specify your own scenes as part of the blueprint instantiation.
+
+
 ### 3.2
     
 - Newer scene categories added (Daily, Halloween, Race day, Romantic, Winter holidays). Thanks @Glennmen!

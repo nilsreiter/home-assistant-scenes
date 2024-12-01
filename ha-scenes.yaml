@@ -42,6 +42,33 @@ blueprint:
 
     ## Changelog 
 
+    ### 3.3
+    
+    - When launching the script, it is now possible to specify your own colors. If the script is called with specified colors, the scene changes to "Special: My scene". There is no limit on the number of colors. It is probably the best use to define a button to call the script with specific colors. 
+      The YAML code for such a call looks like this:
+        ```
+        tap_action:
+          action: perform-action
+          perform_action: ENTITY_ID_OF_THE_SCRIPT
+          target: {}
+          data:
+            scene: "Special: My scene"
+            repeat_delay:
+              hours: 0
+              minutes: 0
+              seconds: 30
+            onlyonlights: false
+            use_scene_brightness: false
+            brightness: 100
+            my_scene:
+              c:
+                - - 0.2361
+                  - 0.2152
+                - - 0.2557
+                  - 0.2325
+              b: 0.6
+        ```
+      Note: This may not be the final form of the feature. If possible, it would be cool to specify your own scenes as part of the blueprint instantiation.
     ### 3.2
     
     - Newer scene categories added (Daily, Halloween, Race day, Romantic, Winter holidays). Thanks @Glennmen!
@@ -253,6 +280,7 @@ blueprint:
         - "Winter holidays: Under the tree"
         - "Special: Colorloop"
         - "Special: Random"
+        - "Special: My scene"
       selector:
         select:
           options:
@@ -378,6 +406,7 @@ blueprint:
             - "Winter holidays: Under the tree"
             - "Special: Colorloop"
             - "Special: Random"
+            - "Special: My scene"
           multiple: true
     default_section:
       name: Script defaults
@@ -601,7 +630,18 @@ fields:
         min: 1
         max: 100
         unit_of_measurement: "%"
-
+  my_scene:
+    name: Define your own scene with your own colors
+    description: >-
+      Expects a dictionary containing "c" and "b" keys. The "c" key contains a 
+      list of colors in "XY" format, the "b" key contains a single float between 0 and 1 
+      specifying the brightness. A valid entry would be:
+        `{"c":[[0.2361,0.2152],[0.2557,0.2325]],"b":0.6}`
+      There is no limit on the number of colors. Specifying a scene here overwrites the selection
+      in the dropdown above (i.e., the field "scene").
+    required: true
+    selector:
+      object:
 variables:
   default_scene: !input default_scene
   default_repeat_delay: !input default_repeat_delay
@@ -620,6 +660,11 @@ variables:
   transition: !input transition
   stop_when_lights_turn_off: !input stop_when_lights_turn_off
   debug: !input debug
+  my_scene_int: |-
+    {% if my_scene is defined %}
+    {% set namedict = {"s": "Special", "n": "My scene"} %}
+    {{ dict(my_scene, **namedict) }}
+    {% endif %}
   scenes: |-
     {{
       {"c":[[0.1969,0.0688],[0.5938,0.261],[0.5535,0.4119],[0.1664,0.5595],[0.6915,0.3083]],"b":0.451,"s":"Halloween","n":"Hocus pocus"},
@@ -749,10 +794,13 @@ variables:
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
       ],"b": 0.9,"s":"Special","n":"Random"},
-      {"c":[],"b": 0.9,"s":"Special","n":"Colorloop"}
+      {"c":[],"b": 0.9,"s":"Special","n":"Colorloop"},
+      my_scene_int
     }}
   scene_name: |-
-    {% if not scene and default_scene %}
+    {% if my_scene is defined %}
+      {% set scene = "Special: My scene" %}
+    {% elif not scene and default_scene %}
       {% set scene = default_scene %}
     {% endif %}
     {% if ":" in scene %}
