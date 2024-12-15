@@ -30,7 +30,7 @@ for preset in obj["presets"]:
 sorted_json = {k: d[k] for k in sorted(d)}
 with open('output.json', 'w') as f:
   for key, value in sorted_json.items():
-    f.write(f'{json.dumps(value, separators=(',', ':'), ensure_ascii=False)},\n')
+    f.write(f'{ json.dumps(value, separators=(",", ":"), ensure_ascii=False) },\n')
   f.write("""{"colors":[
   [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
   [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
