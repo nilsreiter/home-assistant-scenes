@@ -42,6 +42,12 @@ blueprint:
 
     ## Changelog 
 
+    ### 3.4
+    
+    - You can now specify a label, which will then be added to all participating lights. **This requires [Spook](https://spook.boo) to be installed**, which can be done via HACS. Assigning a label makes it easier to control the brightness of the participating lights. It is best to use one label per script, and not to use these labels for anything else, because the script first removes the label from all entities.
+    - For specifying your own scene, it is no longer necessary to also specify a brightness (i.e., you can omit the "b" key in the object). 
+    - Specifying your own scene is no longer a required argument
+    
     ### 3.3
     
     - When launching the script, it is now possible to specify your own colors. If the script is called with specified colors, the scene changes to "Special: My scene". There is no limit on the number of colors. It is probably the best use to define a button to call the script with specific colors. 
@@ -153,6 +159,13 @@ blueprint:
         target:
           entity:
             domain: light
+    label:
+      name: Label
+      description: >-
+        If selected, the script assigns the label to all participating lights when it starts.
+      default: null
+      selector:
+        label:
     scene_pre_selection:
       name: Scenes
       description: >-
@@ -633,16 +646,16 @@ fields:
   my_scene:
     name: Define your own scene with your own colors
     description: >-
-      Expects a dictionary containing "c" and "b" keys. The "c" key contains a 
-      list of colors in "XY" format, the "b" key contains a single float between 0 and 1 
-      specifying the brightness. A valid entry would be:
-        `{"c":[[0.2361,0.2152],[0.2557,0.2325]],"b":0.6}`
+      Expects a dictionary containing a "c" key. The "c" key contains a 
+      list of colors in "XY" format. A valid entry would be:
+        `{"c":[[0.2361,0.2152],[0.2557,0.2325]]}`
       There is no limit on the number of colors. Specifying a scene here overwrites the selection
       in the dropdown above (i.e., the field "scene").
-    required: true
+    required: false
     selector:
       object:
 variables:
+  label: !input label
   default_scene: !input default_scene
   default_repeat_delay: !input default_repeat_delay
   default_onlyonlights: !input default_onlyonlights
@@ -810,7 +823,9 @@ variables:
       {{scenes | selectattr('n', 'eq', scene) | first | default('') }}
     {% endif %}
   brightness_value: |-
-    {% if use_scene_brightness %}
+    {% if my_scene %}
+      {{ brightness }}
+    {% elif use_scene_brightness %}
       {{ (scene_name.b*100)|round(0, 'ceil') }}
     {% elif brightness %}
       {{ brightness }}
@@ -926,6 +941,18 @@ sequence:
           message: >-
             Running dynamic scene {{ scene }} with {{ lights|length }} lights: {{ lights|list }}.
           entity_id: "{{ this.entity_id }}"
+  - if: "{{ label != null and integration_entities('spook')|length > 0 }}"
+    then:
+      - variables:
+          labelled_lights: "{{ label_entities(label) }}"
+      - service: homeassistant.remove_label_from_entity
+        data:
+          label_id: "{{ label }}"
+          entity_id: "{{ labelled_lights }}"
+      - service: homeassistant.add_label_to_entity
+        data: 
+          label_id: "{{ label }}"
+          entity_id: "{{ lights }}"
   - repeat:
       while: >-
         {{ 

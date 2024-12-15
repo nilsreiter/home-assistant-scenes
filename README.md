@@ -38,6 +38,13 @@ target:
 
 ## Changelog 
 
+### 3.4
+
+- You can now specify a label, which will then be added to all participating lights. **This requires [Spook](https://spook.boo) to be installed**, which can be done via HACS. Assigning a label makes it easier to control the brightness of the participating lights. It is best to use one label per script, and not to use these labels for anything else, because the script first removes the label from all entities.
+- For specifying your own scene, it is no longer necessary to also specify a brightness (i.e., you can omit the "b" key in the object). 
+- Specifying your own scene is no longer a required argument.
+
+
 ### 3.3
 
 - When launching the script, it is now possible to specify your own colors. If the script is called with specified colors, the scene changes to "Special: My scene". There is no limit on the number of colors. It is probably the best use to define a button to call the script with specific colors. 
