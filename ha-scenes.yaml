@@ -1042,7 +1042,7 @@ sequence:
                     {% else %}
                       {% if state_attr(repeat.item, "supported_color_modes") == ["rgbw"] %}
                         {% set xy = colors[repeat.index % colors|length] %}
-                        {% set dd = {"rgbw_color": (xy_to_rgb(xy|first, xy|last) + [0]) | from_json } %}
+                        {% set dd = {"rgbw_color": (xy_to_rgb(xy|first, xy|last) | from_json) + [0] } %}
                       {% elif state_attr(repeat.item, "supported_color_modes") == ["rgb"] %}
                         {% set xy = colors[repeat.index % colors|length] %}
                         {% set dd = {"rgb_color": xy_to_rgb(xy|first, xy|last) | from_json } %}
