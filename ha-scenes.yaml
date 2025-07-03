@@ -1,5 +1,5 @@
 blueprint:
-  name: Hue-like Scenes
+  name: Hue-like Scenes (dev)
   domain: script
   description: |-
     This script replicates Hue scenes. Each scene has five different colors represented by XY values. These colors are distributed randomly on the participating lights (must support XY or RGB color modes) -- each light gets a different color.
