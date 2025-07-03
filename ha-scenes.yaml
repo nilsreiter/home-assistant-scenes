@@ -1,5 +1,5 @@
 blueprint:
-  name: Hue-like Scenes
+  name: Hue-like Scenes (dev)
   domain: script
   description: |-
     This script replicates Hue scenes. Each scene has five different colors represented by XY values. These colors are distributed randomly on the participating lights (must support XY or RGB color modes) -- each light gets a different color.
@@ -42,8 +42,9 @@ blueprint:
 
     ### 3.5
 
-    - Fixed types in the examples
-    - Support for RGBW color mode: For lights that *only* support RGB or RGBW color modes, the color is automatically converted into RGB/RGBW. In case of RGBW, the white value is set to 0.
+    - Fixed typos in the examples
+    - Added a new field called "Initial Action", used to specify actions that run before the main loop. Can be empty.
+    - (Some) support for RGBW color mode: For lights that *only* support RGB or RGBW color modes, the color is automatically converted into RGB/RGBW. In case of RGBW, the white value is set to 0. This probably doesn't work perfectly. If you encounter issues, please try with turning the lights off first, using the new initial action feature.
     - Simplified some of the template magic by using new functions, therefore minimum Home Assistant version is now 2025.4.
 
     ### 3.4
@@ -513,6 +514,15 @@ blueprint:
               min: 1
               max: 101
           default: 101
+    initial_action:
+      name: Initial action
+      description: >-
+        The action(s) specified here are executed before any light settings are 
+        changed. They can be used to, e.g., turn off other effects currently 
+        running on the lights.
+      default: []
+      selector:
+        action:
     include_mode_color_temp:
       name: Include bulbs with `color_temp`.
       description: >-
@@ -958,6 +968,7 @@ sequence:
         data:
           label_id: "{{ label }}"
           entity_id: "{{ lights }}"
+  - sequence: !input initial_action
   - repeat:
       while: >-
         {{ 
