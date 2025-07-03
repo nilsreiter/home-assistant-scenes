@@ -38,18 +38,23 @@ blueprint:
       entity_id: script.hue_like_scenes
     ```
 
-
-
     ## Changelog 
 
+    ### 3.5
+
+    - Fixed typos in the examples
+    - Added a new field called "Initial Action", used to specify actions that run before the main loop. Can be empty.
+    - (Some) support for RGBW color mode: For lights that *only* support RGB or RGBW color modes, the color is automatically converted into RGB/RGBW. In case of RGBW, the white value is set to 0. This probably doesn't work perfectly. If you encounter issues, please try with turning the lights off first, using the new initial action feature.
+    - Simplified some of the template magic by using new functions, therefore minimum Home Assistant version is now 2025.4.
+
     ### 3.4
-    
+
     - You can now specify a label, which will then be added to all participating lights. **This requires [Spook](https://spook.boo) to be installed**, which can be done via HACS. Assigning a label makes it easier to control the brightness of the participating lights. It is best to use one label per script, and not to use these labels for anything else, because the script first removes the label from all entities.
     - For specifying your own scene, it is no longer necessary to also specify a brightness (i.e., you can omit the "b" key in the object). 
     - Specifying your own scene is no longer a required argument
-    
+
     ### 3.3
-    
+
     - When launching the script, it is now possible to specify your own colors. If the script is called with specified colors, the scene changes to "Special: My scene". There is no limit on the number of colors. It is probably the best use to define a button to call the script with specific colors. 
       The YAML code for such a call looks like this:
         ```
@@ -76,7 +81,7 @@ blueprint:
         ```
       Note: This may not be the final form of the feature. If possible, it would be cool to specify your own scenes as part of the blueprint instantiation.
     ### 3.2
-    
+
     - Newer scene categories added (Daily, Halloween, Race day, Romantic, Winter holidays). Thanks @Glennmen!
     - Updated format for storing scene information.
 
@@ -148,7 +153,7 @@ blueprint:
     - Crocus: https://unsplash.com/photos/close-up-photo-of-purple-petaled-flower-hB_xgEXucQs
   author: Nils Reiter
   homeassistant:
-    min_version: "2024.06.00"
+    min_version: "2025.04.00"
   input:
     target:
       name: Target
@@ -509,6 +514,15 @@ blueprint:
               min: 1
               max: 101
           default: 101
+    initial_action:
+      name: Initial action
+      description: >-
+        The action(s) specified here are executed before any light settings are 
+        changed. They can be used to, e.g., turn off other effects currently 
+        running on the lights.
+      default: []
+      selector:
+        action:
     include_mode_color_temp:
       name: Include bulbs with `color_temp`.
       description: >-
@@ -557,7 +571,8 @@ blueprint:
         script is called.
       selector:
         entity:
-          domain: input_text
+          filter:
+            - domain: "input_text"
     transition:
       name: Transition time
       description: How long to move from one color to the next. Not used for color loop.
@@ -617,7 +632,7 @@ fields:
       lights.
     required: false
     default: !input default_onlyonlights
-    example: false
+    example: "false"
     selector:
       boolean: null
   use_scene_brightness:
@@ -626,7 +641,7 @@ fields:
       If set, the script uses brightness values pre-defined for each scene.
     required: false
     default: !input default_use_scene_brightness
-    example: false
+    example: "false"
     selector:
       boolean: null
   brightness:
@@ -635,7 +650,7 @@ fields:
       If set, all lights will be set to the given brightness percentage. In
       loop mode, brightness is only applied on the first iteration, allowing
       brightness changes afterwards.
-    example: 50
+    example: "50"
     required: false
     default: !input default_brightness
     selector:
@@ -867,7 +882,7 @@ variables:
       {% endif %}
     {% endif %}
 
-     ## process devices
+    ## process devices
     {% if target.device_id is defined %}
       {% if target.device_id is iterable and not target.device_id is string %}
         {% for f in target.device_id %}
@@ -913,7 +928,7 @@ variables:
     {% set ns.lights_temporary = [] %}
     {%- for ll in ns.l %}
       {%- set colormodes = state_attr(ll, "supported_color_modes") -%}
-      {%- if "xy" in colormodes or "rgb" in colormodes or (include_mode_color_temp and "color_temp" in colormodes) or (not include_mode_color_temp and scene_name.n in ["Bright", "Concentrate", "Cool bright", "Dimmed", "Energize", "Nightlight", "Read", "Relax", "Rest"]) -%}
+      {%- if (intersect(colormodes, ["xy", "rgb", "rgbw"]) | count > 0) or (include_mode_color_temp and "color_temp" in colormodes) or (not include_mode_color_temp and scene_name.n in ["Bright", "Concentrate", "Cool bright", "Dimmed", "Energize", "Nightlight", "Read", "Relax", "Rest"]) -%}
         {% set ns.lights_temporary = ns.lights_temporary + [ll] %}
       {%- endif -%}
     {%- endfor -%}
@@ -928,14 +943,14 @@ sequence:
   - choose:
       - conditions: "{{ report_entity is defined }}"
         sequence:
-          - service: input_text.set_value
+          - action: input_text.set_value
             data:
               value: "{{ scene_name.n }}"
             target:
               entity_id: !input report_entity
   - if: "{{ debug }}"
     then:
-      - service: logbook.log
+      - action: logbook.log
         data:
           name: "{{ this.attributes.friendly_name }}"
           message: >-
@@ -945,14 +960,15 @@ sequence:
     then:
       - variables:
           labelled_lights: "{{ label_entities(label) }}"
-      - service: homeassistant.remove_label_from_entity
+      - action: homeassistant.remove_label_from_entity
         data:
           label_id: "{{ label }}"
           entity_id: "{{ labelled_lights }}"
-      - service: homeassistant.add_label_to_entity
-        data: 
+      - action: homeassistant.add_label_to_entity
+        data:
           label_id: "{{ label }}"
           entity_id: "{{ lights }}"
+  - sequence: !input initial_action
   - repeat:
       while: >-
         {{ 
@@ -969,7 +985,7 @@ sequence:
       sequence:
         - if: "{{ debug }}"
           then:
-            - service: logbook.log
+            - action: logbook.log
               data:
                 name: "{{ this.attributes.friendly_name }}"
                 message: >-
@@ -992,6 +1008,35 @@ sequence:
             sequence:
               - variables:
                   datadict: |-
+                    {# Macro generated by Claude and adapted #}
+                    {% macro xy_to_rgb(x, y, Y=1.0, scale_to_255=true) %}
+                      {# Step 1: Convert xy to XYZ #}
+                      {%- set X = (x * Y) / y -%}
+                      {%- set Z = ((1 - x - y) * Y) / y -%}
+                      
+                      {# Step 2: Convert XYZ to linear RGB using sRGB matrix #}
+                      {%- set linear_r = 3.2406 * X - 1.5372 * Y - 0.4986 * Z -%}
+                      {%- set linear_g = -0.9689 * X + 1.8758 * Y + 0.0415 * Z -%}
+                      {%- set linear_b = 0.0557 * X - 0.2040 * Y + 1.0570 * Z -%}
+                      
+                      {# Step 3: Apply gamma correction #}
+                      {%- set gamma_r = 12.92 * linear_r if linear_r <= 0.0031308 else 1.055 * (linear_r ** (1/2.4)) - 0.055 -%}
+                      {%- set gamma_g = 12.92 * linear_g if linear_g <= 0.0031308 else 1.055 * (linear_g ** (1/2.4)) - 0.055 -%}
+                      {%- set gamma_b = 12.92 * linear_b if linear_b <= 0.0031308 else 1.055 * (linear_b ** (1/2.4)) - 0.055 -%}
+                      
+                      {# Step 4: Clamp values to 0-1 range #}
+                      {%- set clamped_r = [0, [gamma_r, 1] | min] | max -%}
+                      {%- set clamped_g = [0, [gamma_g, 1] | min] | max -%}
+                      {%- set clamped_b = [0, [gamma_b, 1] | min] | max -%}
+                      
+                      {# Step 5: Scale to 0-255 if requested, otherwise return 0-1 range #}
+                      {%- if scale_to_255 -%}
+                        {{ [ (clamped_r * 255) | round | int, (clamped_g * 255) | round | int, (clamped_b * 255) | round | int ] }}
+                      {%- else -%}
+                        {{ [ clamped_r, clamped_g, clamped_b ] }}
+                      {%- endif -%}
+                    {% endmacro %}
+
                     {% if scene_name.n == "Colorloop" %}
                       {% set oldcol = state_attr(repeat.item, "hs_color") %}
                       {% if first or (oldcol == None) %}
@@ -1006,8 +1051,16 @@ sequence:
                       {% set xy = colors[repeat.index % colors|length] %}
                       {% set dd = {"hs_color": [xy|first, xy|last] } %}
                     {% else %}
-                      {% set xy = colors[repeat.index % colors|length] %}
-                      {% set dd = {"xy_color": [xy|first, xy|last] } %}
+                      {% if state_attr(repeat.item, "supported_color_modes") == ["rgbw"] %}
+                        {% set xy = colors[repeat.index % colors|length] %}
+                        {% set dd = {"rgbw_color": (xy_to_rgb(xy|first, xy|last) | from_json) + [0] } %}
+                      {% elif state_attr(repeat.item, "supported_color_modes") == ["rgb"] %}
+                        {% set xy = colors[repeat.index % colors|length] %}
+                        {% set dd = {"rgb_color": xy_to_rgb(xy|first, xy|last) | from_json } %}
+                      {% else %}
+                        {% set xy = colors[repeat.index % colors|length] %}
+                        {% set dd = {"xy_color": [xy|first, xy|last] } %}
+                      {% endif %}
                     {% endif %}
 
                     {% if brightness_value != "x" and first %}
@@ -1020,7 +1073,7 @@ sequence:
                       {% set dd = dict(dd, **bd) %}
                     {% endif %}
                     {{ dd }}
-              - service: light.turn_on
+              - action: light.turn_on
                 data: "{{ datadict }}"
                 target:
                   entity_id: "{{ repeat.item }}"
@@ -1028,7 +1081,7 @@ sequence:
         - if: "{{ stop_when_lights_turn_off }}"
           then:
             - wait_for_trigger:
-                - platform: template
+                - trigger: template
                   value_template: "{{ (( lights | list | count ) != (lights | select('is_state', 'on') | list | count)) }}"
               timeout: "{{ repeat_delay }}"
           else:
