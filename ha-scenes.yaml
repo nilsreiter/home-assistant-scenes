@@ -221,6 +221,14 @@ blueprint:
         - "Halloween: Toil and trouble"
         - "Halloween: Trick or treat"
         - "Halloween: Witching hour"
+        - "Harvest hues: Amber robin"
+        - "Harvest hues: Autumn gold"
+        - "Harvest hues: Downtown drizzle"
+        - "Harvest hues: November haze"
+        - "Harvest hues: Pumpkin patch"        
+        - "Harvest hues: Pumpkin spice"
+        - "Harvest hues: Woodland toadstool"
+        - "Harvest hues: Fall harvest"
         - "Lush: Amber bloom"
         - "Lush: Blue planet"
         - "Lush: Forest adventure"
@@ -286,6 +294,11 @@ blueprint:
         - "Sunrise: Horizon"
         - "Sunrise: Sunflare"
         - "Sunrise: Valley dawn"
+        - "Wanderlust: Coastal nights"
+        - "Wanderlust: Island warmth"
+        - "Wanderlust: Ocean escape"
+        - "Wanderlust: Rome"
+        - "Wanderlust: Santorini"
         - "Winter holidays: Color burst"
         - "Winter holidays: Crystalline"
         - "Winter holidays: Festive fun"
@@ -347,6 +360,14 @@ blueprint:
             - "Halloween: Toil and trouble"
             - "Halloween: Trick or treat"
             - "Halloween: Witching hour"
+            - "Harvest hues: Amber robin"
+            - "Harvest hues: Autumn gold"
+            - "Harvest hues: Downtown drizzle"
+            - "Harvest hues: November haze"
+            - "Harvest hues: Pumpkin patch"
+            - "Harvest hues: Pumpkin spice"
+            - "Harvest hues: Woodland toadstool"
+            - "Harvest hues: Fall harvest"
             - "Lush: Amber bloom"
             - "Lush: Blue planet"
             - "Lush: Forest adventure"
@@ -412,6 +433,11 @@ blueprint:
             - "Sunrise: Horizon"
             - "Sunrise: Sunflare"
             - "Sunrise: Valley dawn"
+            - "Wanderlust: Coastal nights"
+            - "Wanderlust: Island warmth"
+            - "Wanderlust: Ocean escape"
+            - "Wanderlust: Rome"
+            - "Wanderlust: Santorini"
             - "Winter holidays: Color burst"
             - "Winter holidays: Crystalline"
             - "Winter holidays: Festive fun"
@@ -815,6 +841,19 @@ variables:
       {"c":[[0.4648,0.4254],[0.3924,0.4132],[0.2709,0.3235],[0.255,0.4176],[0.3134,0.4131]],"b":0.749,"s":"Peaceful","n":"Emerald isle"},
       {"c":[[0.2636,0.2755],[0.2221,0.2196],[0.2636,0.2508],[0.2377,0.2547],[0.2091,0.1898]],"b":0.886,"s":"Pure","n":"Midwinter"},
       {"c":[[0.363,0.2716],[0.4731,0.3723],[0.5813,0.3636],[0.2412,0.1171],[0.3044,0.1803]],"b":0.439,"s":"Cozy","n":"Tropical twilight"},
+      {"c":[[0.3874,0.4555],[0.4098,0.4045],[0.4502,0.4000],[0.5660,0.3776],[0.6334,0.3054]],"b":0.8,"s":"Harvest hues","n":"Woodland toadstool"}
+      {"c":[[0.5774,0.3782],[0.516,0.4163],[0.4782,0.4295],[0.4327,0.407],[0.3224,0.3974]],"b":0.59,"s":"Harvest hues","n":"Fall harvest"}
+      {"c":[[0.375,0.3483],[0.437,0.3629],[0.343,0.3315],[0.3073,0.3121],[0.3073,0.3121]],"b":0.7,"s":"Harvest hues","n":"Pumpkin spice"}
+      {"c":[[0.3978,0.3726],[0.4138,0.3449],[0.3038,0.2952],[0.3073,0.3121],[0.3073,0.3121]],"b":0.55,"s":"Harvest hues","n":"November haze"}
+      {"c":[[0.3042,0.3086],[0.3077,0.3125],[0.3077,0.3125],[0.3077,0.3125],[0.3042,0.3086]],"b":0.75,"s":"Harvest hues","n":"Amber robin"}
+      {"c":[[0.3042,0.3086],[0.3063,0.3109],[0.3063,0.3109],[0.3063,0.3109],[0.3042,0.3086]],"b":0.45,"s":"Harvest hues","n":"Pumpkin patch"}
+      {"c":[[0.425,0.3845],[0.4155,0.3874],[0.4839,0.3062],[0.4082,0.363],[0.4323,0.3325]],"b":0.29,"s":"Harvest hues","n":"Downtown drizzle"}
+      {"c":[[0.425,0.3845],[0.4155,0.3874],[0.4839,0.3062],[0.4082,0.363],[0.4323,0.3325]],"b":0.76,"s":"Harvest hues","n":"Autumn gold"}
+      {"c":[[0.3193,0.3304],[0.3166,0.3399],[0.3099,0.3208],[0.3289,0.3277],[0.2982,0.3104]],"b":0.89,"s":"Wanderlust","n":"Rome"}
+      {"c":[[0.3292,0.3417],[0.462,0.2578],[0.4519,0.3298],[0.5322,0.2769],[0.3159,0.3153]],"b":0.8,"s":"Wanderlust","n":"Santorini"}
+      {"c":[[0.3262,0.3372],[0.3266,0.3376],[0.4248,0.3182],[0.5087,0.2568],[0.3071,0.3159]],"b":0.65,"s":"Wanderlust","n":"Coastal nights"}
+      {"c":[[0.4248,0.3268],[0.4694,0.3107],[0.5167,0.3858],[0.5106,0.3573],[0.3655,0.3486]],"b":1.0,"s":"Wanderlust","n":"Ocean escape"}
+      {"c":[[0.4826,0.4218],[0.4544,0.4089],[0.4381,0.3791],[0.4815,0.3671],[0.518,0.3597]],"b":0.61,"s":"Wanderlust","n":"Island warmth"}
       {"c":[
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
         [ range(hue_min|default(0),hue_max|default(360))|random,range(sat_min|default(99),sat_max|default(101))|random ],
