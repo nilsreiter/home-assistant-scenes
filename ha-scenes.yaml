@@ -43,6 +43,7 @@ blueprint:
     ### 3.6
     
     - Script now also accepts lights with color mode "hs" (fixes #18)
+    - New scene categories "Harvest" and "Wanderlust" (thanks, @MVrauwdeunt)
 
     ### 3.5
 
