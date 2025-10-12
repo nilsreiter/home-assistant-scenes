@@ -40,6 +40,10 @@ blueprint:
 
     ## Changelog 
 
+    ### 3.6
+    
+    - Script now also accepts lights with color mode "hs" (fixes #18)
+
     ### 3.5
 
     - Fixed typos in the examples
@@ -967,7 +971,7 @@ variables:
     {% set ns.lights_temporary = [] %}
     {%- for ll in ns.l %}
       {%- set colormodes = state_attr(ll, "supported_color_modes") -%}
-      {%- if (intersect(colormodes, ["xy", "rgb", "rgbw"]) | count > 0) or (include_mode_color_temp and "color_temp" in colormodes) or (not include_mode_color_temp and scene_name.n in ["Bright", "Concentrate", "Cool bright", "Dimmed", "Energize", "Nightlight", "Read", "Relax", "Rest"]) -%}
+      {%- if (intersect(colormodes, ["xy", "rgb", "rgbw", "hs"]) | count > 0) or (include_mode_color_temp and "color_temp" in colormodes) or (not include_mode_color_temp and scene_name.n in ["Bright", "Concentrate", "Cool bright", "Dimmed", "Energize", "Nightlight", "Read", "Relax", "Rest"]) -%}
         {% set ns.lights_temporary = ns.lights_temporary + [ll] %}
       {%- endif -%}
     {%- endfor -%}
